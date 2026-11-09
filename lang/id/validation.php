@@ -1,0 +1,80 @@
+<?php
+
+/*
+| Pesan validasi Bahasa Indonesia. Aturan yang tidak ada di sini
+| memakai pesan bawaan Laravel (bahasa Inggris, fallback_locale).
+*/
+
+return [
+    'accepted' => ':attribute harus disetujui.',
+    'after' => ':attribute harus tanggal setelah :date.',
+    'after_or_equal' => ':attribute harus tanggal yang sama atau setelah :date.',
+    'alpha_dash' => ':attribute hanya boleh berisi huruf, angka, strip, dan underscore.',
+    'array' => ':attribute harus berupa daftar.',
+    'before' => ':attribute harus tanggal sebelum :date.',
+    'before_or_equal' => ':attribute tidak boleh melewati :date.',
+    'between' => [
+        'numeric' => ':attribute harus antara :min dan :max.',
+        'string' => ':attribute harus antara :min dan :max karakter.',
+    ],
+    'boolean' => ':attribute harus bernilai ya atau tidak.',
+    'confirmed' => 'Konfirmasi :attribute tidak cocok.',
+    'date' => ':attribute bukan tanggal yang valid.',
+    'email' => ':attribute harus alamat email yang valid.',
+    'exists' => ':attribute yang dipilih tidak ditemukan.',
+    'file' => ':attribute harus berupa file.',
+    'image' => ':attribute harus berupa gambar.',
+    'in' => ':attribute yang dipilih tidak valid.',
+    'integer' => ':attribute harus bilangan bulat.',
+    'max' => [
+        'array' => ':attribute maksimal :max item.',
+        'file' => ':attribute maksimal :max kilobyte.',
+        'numeric' => ':attribute maksimal :max.',
+        'string' => ':attribute maksimal :max karakter.',
+    ],
+    'mimes' => ':attribute harus berformat: :values.',
+    'min' => [
+        'array' => ':attribute minimal :min item.',
+        'file' => ':attribute minimal :min kilobyte.',
+        'numeric' => ':attribute minimal :min.',
+        'string' => ':attribute minimal :min karakter.',
+    ],
+    'not_in' => ':attribute yang dipilih tidak valid.',
+    'numeric' => ':attribute harus berupa angka.',
+    'password' => [
+        'letters' => ':attribute harus berisi minimal satu huruf.',
+        'mixed' => ':attribute harus berisi huruf besar dan huruf kecil.',
+        'numbers' => ':attribute harus berisi minimal satu angka.',
+        'symbols' => ':attribute harus berisi minimal satu simbol.',
+        'uncompromised' => ':attribute ini pernah bocor di internet. Gunakan password lain.',
+    ],
+    'prohibited' => ':attribute tidak boleh diisi.',
+    'regex' => 'Format :attribute tidak valid.',
+    'required' => ':attribute wajib diisi.',
+    'required_with' => ':attribute wajib diisi bila :values diisi.',
+    'string' => ':attribute harus berupa teks.',
+    'unique' => ':attribute sudah dipakai.',
+    'uploaded' => ':attribute gagal diunggah.',
+
+    'attributes' => [
+        'name' => 'nama',
+        'nama' => 'nama',
+        'email' => 'email',
+        'password' => 'password',
+        'telepon' => 'telepon',
+        'alamat' => 'alamat',
+        'description' => 'deskripsi',
+        'file' => 'file',
+        'start_date' => 'tanggal mulai',
+        'end_date' => 'tanggal akhir',
+        'date' => 'tanggal',
+        'discount' => 'diskon',
+        'total_pembayaran' => 'uang tunai',
+        'customer_id' => 'pelanggan',
+        'payment_method' => 'metode pembayaran',
+        'keterangan' => 'keterangan',
+        'opname_date' => 'tanggal opname',
+        'amount' => 'nominal',
+        'status' => 'status',
+    ],
+];

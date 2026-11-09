@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Logo toko">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2147"/>
+      <stop offset="1" stop-color="#1b1530"/>
+    </linearGradient>
+    <linearGradient id="petal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd1e1"/>
+      <stop offset="1" stop-color="#ff4f8b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <!-- Bunga sakura: 5 kelopak berlekuk, diputar 72 derajat -->
+  <g transform="translate(32 33)">
+    <g id="p">
+      <path d="M0 -2 C -7 -6 -9 -15 -4 -21 L 0 -17.5 L 4 -21 C 9 -15 7 -6 0 -2 Z" fill="url(#petal)"/>
+    </g>
+    <use href="#p" transform="rotate(72)"/>
+    <use href="#p" transform="rotate(144)"/>
+    <use href="#p" transform="rotate(216)"/>
+    <use href="#p" transform="rotate(288)"/>
+    <circle r="3.6" fill="#ffe27a"/>
+  </g>
+  <!-- Bintang kecil -->
+  <path d="M50 9 l1.6 3.6 3.6 1.6 -3.6 1.6 -1.6 3.6 -1.6 -3.6 -3.6 -1.6 3.6 -1.6 z" fill="#ffe27a"/>
+</svg>

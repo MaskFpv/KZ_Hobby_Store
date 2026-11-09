@@ -1,0 +1,20 @@
+@extends('layouts.app')
+
+@section('title', 'Edit User')
+
+@section('content')
+    <x-flash-errors />
+    <div class="card">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ route('users.update', $user) }}">
+                @csrf
+                @method('PUT')
+                @include('app.users.form-inputs')
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{{ route('users.index') }}" class="btn btn-light">@lang('crud.common.back')</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection
