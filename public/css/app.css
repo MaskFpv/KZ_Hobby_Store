@@ -21,16 +21,16 @@
     --kz-matcha: #2fbf71;
     --kz-yuzu: #f5a524;
     --kz-crimson: #e5484d;
-    --kz-bg: #f6f4fb;
-    --kz-surface: #ffffff;
+    --kz-bg: #eceaf4;
+    --kz-surface: #f8f7fc;
     --kz-text: #1d1b2e;
-    --kz-muted: #6e6a85;
+    --kz-muted: #615c7a;
     --kz-border: #e9e5f3;
     --kz-heading: var(--kz-ink);    /* judul & angka; sidebar tetap pakai --kz-ink */
-    --kz-surface-2: #f3f0fa;        /* tombol light, latar lembut */
-    --kz-soft: #f8f6fd;
-    --kz-topbar: rgba(246, 244, 251, .85);
-    --kz-hover: #faf8ff;
+    --kz-surface-2: #e7e3f2;        /* tombol light, latar lembut */
+    --kz-soft: #f1eef8;
+    --kz-topbar: rgba(236, 234, 244, .85);
+    --kz-hover: #f1eef8;
     --kz-lavender-text: #6a5bd8;
     /* isi tombol/badge berteks putih & warna link: cukup pekat agar terbaca (WCAG AA) */
     --kz-sakura-strong: #cc2763;
@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6, .card-title { font-weight: 800; color: var(--kz-heading)
     --bs-btn-active-bg: var(--kz-sakura-strong); --bs-btn-active-border-color: var(--kz-sakura-strong);
 }
 .btn-secondary { --bs-btn-bg: #6c5ce0; --bs-btn-border-color: #6c5ce0; --bs-btn-hover-bg: #5b4bcf; --bs-btn-hover-border-color: #5b4bcf; --bs-btn-active-bg: #5b4bcf; }
-.btn-outline-secondary { --bs-btn-color: #6a5bd8; --bs-btn-border-color: #c9c2fb; --bs-btn-hover-bg: var(--kz-lavender); --bs-btn-hover-border-color: var(--kz-lavender); --bs-btn-active-bg: var(--kz-lavender); --bs-btn-active-border-color: var(--kz-lavender); }
+.btn-outline-secondary { --bs-btn-color: #5446bd; --bs-btn-border-color: #c9c2fb; --bs-btn-hover-bg: var(--kz-lavender); --bs-btn-hover-border-color: var(--kz-lavender); --bs-btn-active-bg: var(--kz-lavender); --bs-btn-active-border-color: var(--kz-lavender); }
 .btn-success { --bs-btn-bg: var(--kz-success-strong); --bs-btn-border-color: var(--kz-success-strong); --bs-btn-hover-bg: #15693c; --bs-btn-hover-border-color: #15693c; }
 .btn-danger { --bs-btn-bg: var(--kz-danger-strong); --bs-btn-border-color: var(--kz-danger-strong); --bs-btn-hover-bg: #ad2a30; --bs-btn-hover-border-color: #ad2a30; }
 .btn-light { --bs-btn-bg: var(--kz-surface-2); --bs-btn-border-color: var(--kz-surface-2); --bs-btn-hover-bg: var(--kz-border); --bs-btn-hover-border-color: var(--kz-border); --bs-btn-color: var(--kz-heading); --bs-btn-hover-color: var(--kz-heading); --bs-btn-active-bg: var(--kz-border); --bs-btn-active-color: var(--kz-heading); }

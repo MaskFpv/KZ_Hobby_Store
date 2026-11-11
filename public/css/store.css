@@ -38,26 +38,26 @@
     --grain: .07;
     color-scheme: dark;
 }
-/* Mode terang: neon tetap, latar putih lavender (cocok untuk proyektor) */
+/* Mode terang: neon tetap, latar lavender lembut (tidak silau di proyektor) */
 :root[data-theme="light"] {
-    --ink-950: #f6f3ff;
-    --ink-900: #ffffff;
-    --ink-800: #fbf9ff;
-    --ink-700: #efeafc;
-    --ink-600: #d9d0f2;
+    --ink-950: #e9e5f4;
+    --ink-900: #f4f1fa;
+    --ink-800: #efebf8;
+    --ink-700: #e2dcf0;
+    --ink-600: #cbc2e2;
     --pink: #c40c66;
     --pink-soft: rgba(196, 12, 102, .12);
     --pink-btn: #c40c66;
-    --cyan: #00708a;
-    --cyan-soft: rgba(0, 112, 138, .12);
+    --cyan: #006279;
+    --cyan-soft: rgba(0, 98, 121, .12);
     --violet: #7c4dff;
-    --yellow: #8a5a00;
+    --yellow: #7a5000;
     --text: #1b1530;
     --text-soft: #3b3458;
-    --muted: #645d86;
-    --bg-rgb: 246, 243, 255;
-    --surface-rgb: 255, 255, 255;
-    --surface2-rgb: 251, 249, 255;
+    --muted: #554e74;
+    --bg-rgb: 233, 229, 244;
+    --surface-rgb: 244, 241, 250;
+    --surface2-rgb: 239, 235, 248;
     --fg-rgb: 27, 21, 48;
     --grain: .035;
     color-scheme: light;
