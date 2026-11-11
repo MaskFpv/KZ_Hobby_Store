@@ -35,8 +35,10 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
-        Gate::define('view-dashboard', function ($user) {
-            return $user->hasPermissionTo('view dashboard');
-        });
+        // Permission khusus (di luar CRUD), lihat PermissionsSeeder::SPECIAL
+        Gate::define('view-dashboard', fn ($user) => $user->hasPermissionTo('view dashboard'));
+        Gate::define('view-reports', fn ($user) => $user->hasPermissionTo('view reports'));
+        Gate::define('view-profit', fn ($user) => $user->hasPermissionTo('view profit'));
+        Gate::define('handover-orders', fn ($user) => $user->hasPermissionTo('handover orders'));
     }
 }

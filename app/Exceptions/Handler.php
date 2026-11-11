@@ -16,6 +16,10 @@ class Handler extends ExceptionHandler
         'current_password',
         'password',
         'password_confirmation',
+        // Data kartu (prototype pembayaran) tidak boleh ikut tersimpan di session
+        'card_number',
+        'card_cvc',
+        'card_expiry',
     ];
 
     /**

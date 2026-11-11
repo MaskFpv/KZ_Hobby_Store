@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Alur Pre-Order:
+ *   [online] pending_payment (menunggu DP) -> waiting saat DP dibayar
  *   waiting (menunggu barang) -> arrived (barang tiba, stok dialokasikan)
  *   -> completed (lunas & diambil: jadi transaksi penjualan, stok dipotong)
  *   waiting/arrived -> cancelled
@@ -20,8 +21,63 @@ use Illuminate\Validation\ValidationException;
  */
 class PreOrderService
 {
-    public function __construct(private StockService $stock)
+    public function __construct(private StockService $stock, private PaymentService $payments)
     {
+    }
+
+    /** PO dari website: dibuat menunggu DP, plus tagihan DP online. */
+    public function createOnline(\App\Models\Customer $customer, Product $product, int $qty, float $dp, string $method, ?string $bank): \App\Models\OnlinePayment
+    {
+        if (! $product->is_published || ! $product->isPreOrderOpen()) {
+            throw ValidationException::withMessages(['product' => 'Pre-order produk ini sudah ditutup.']);
+        }
+
+        $total = round((float) $product->selling_price * $qty, 2);
+        $min = (float) ceil($total * config('store.dp_min_percent') / 100);
+
+        if ($dp < $min || $dp > $total) {
+            throw ValidationException::withMessages([
+                'dp_amount' => 'DP minimal Rp ' . number_format($min, 0, ',', '.') . ' dan maksimal Rp ' . number_format($total, 0, ',', '.') . '.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($customer, $product, $qty, $total, $dp, $method, $bank) {
+            $po = PreOrder::create([
+                'customer_id' => $customer->id,
+                'product_id' => $product->id,
+                'quantity' => $qty,
+                'unit_price' => $product->selling_price,
+                'total_price' => $total,
+                'paid_amount' => 0,
+                'order_date' => now()->toDateString(),
+                'status' => 'pending_payment',
+                'channel' => 'online',
+            ]);
+
+            return $this->payments->create($po, $dp, $method, 'dp', $bank);
+        });
+    }
+
+    /** Member membayar cicilan / pelunasan PO dari website. */
+    public function requestOnlinePayment(PreOrder $po, float $amount, string $method, ?string $bank): \App\Models\OnlinePayment
+    {
+        if (! $po->isOpen()) {
+            throw ValidationException::withMessages(['amount' => "PO {$po->code} tidak sedang menunggu pembayaran."]);
+        }
+        if ($amount < 1 || $amount > $po->remaining_amount) {
+            throw ValidationException::withMessages([
+                'amount' => 'Nominal harus antara Rp 1 dan sisa tagihan Rp ' . number_format($po->remaining_amount, 0, ',', '.') . '.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($po, $amount, $method, $bank) {
+            // Satu tagihan aktif per PO: tagihan lama yang belum dibayar diganti
+            $this->payments->expirePending($po);
+
+            $purpose = abs($amount - $po->remaining_amount) < 0.01 ? 'settlement' : 'installment';
+
+            return $this->payments->create($po, $amount, $method, $purpose, $bank);
+        });
     }
 
     public function create(array $data, float $dp, string $paymentMethod, ?int $userId): PreOrder
@@ -80,6 +136,13 @@ class PreOrderService
                 'notes' => $notes,
             ]);
             $po->refreshPaidAmount();
+
+            // PO online yang DP-nya dibayar langsung di toko
+            if ($po->status === 'pending_payment') {
+                $this->payments->expirePending($po);
+                $po->update(['status' => 'waiting']);
+                $this->stock->allocateWaitingPreOrders(Product::findOrFail($po->product_id));
+            }
 
             return $payment;
         });
@@ -178,6 +241,7 @@ class PreOrderService
 
             $notes = trim(($po->notes ? $po->notes . "\n" : '') . 'Dibatalkan ' . now()->format('d-m-Y') . ($reason ? ": {$reason}" : ''));
             $po->update(['status' => 'cancelled', 'notes' => $notes]);
+            $this->payments->expirePending($po); // tagihan online yang belum dibayar ikut batal
 
             // Stok yang dialokasikan ke PO ini bisa dipakai antrean PO berikutnya
             $this->stock->allocateWaitingPreOrders(Product::findOrFail($po->product_id));

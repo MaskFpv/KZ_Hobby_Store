@@ -36,14 +36,17 @@ class TransactionController extends Controller
         $this->authorize('view-any', Transaction::class);
 
         $filters = $request->only(self::FILTERS);
-        $transactions = self::filteredQuery($filters)->get();
+        $transactions = self::filteredQuery($filters)
+            // Tanpa akses laporan (mis. kasir): hanya transaksi yang dia layani
+            ->when(! $request->user()->can('view-reports'), fn ($q) => $q->where('user_id', $request->user()->id))
+            ->get();
 
         return view('app.transaction.data', compact('transactions', 'filters'));
     }
 
     public function laporan()
     {
-        $this->authorize('view-any', Transaction::class);
+        $this->authorize('view-reports');
 
         return view('app.transaction.laporan');
     }
@@ -59,14 +62,14 @@ class TransactionController extends Controller
 
     public function export(Request $request)
     {
-        $this->authorize('view-any', Transaction::class);
+        $this->authorize('view-reports');
 
         return Excel::download(new ListTransaction($request->only(self::FILTERS)), date('Ymd') . '__List-Transaksi.xlsx');
     }
 
     public function exportpdf(Request $request)
     {
-        $this->authorize('view-any', Transaction::class);
+        $this->authorize('view-reports');
 
         $filters = $request->only(self::FILTERS);
         $data = self::filteredQuery($filters)->get();
@@ -78,7 +81,7 @@ class TransactionController extends Controller
 
     public function exportLaporan($awal, $akhir)
     {
-        $this->authorize('view-any', Transaction::class);
+        $this->authorize('view-reports');
 
         $laporan = self::filteredQuery(['from' => $awal, 'to' => $akhir])->reorder('date')->orderBy('id')->get();
         $total_pendapatan = $laporan->sum('total_price');

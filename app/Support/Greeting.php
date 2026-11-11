@@ -25,9 +25,33 @@ class Greeting
     private const ROLE_STYLES = [
         'super-admin' => [
             'honorific' => 'sama',
+            'title_jp' => 'オーナー',
+            'title' => 'Ōnā (Pemilik Toko)',
+            'message' => 'Laporan penjualan, stok, dan antrean pre-order sudah siap untuk Anda periksa.',
+        ],
+        'admin' => [
+            'honorific' => 'sama',
             'title_jp' => '店長',
             'title' => 'Tenchō (Manajer Toko)',
-            'message' => 'Laporan penjualan, stok, dan antrean pre-order sudah siap untuk Anda periksa.',
+            'message' => 'Operasional toko hari ini siap Anda pantau dari dashboard.',
+        ],
+        'keuangan' => [
+            'honorific' => 'san',
+            'title_jp' => '経理',
+            'title' => 'Keiri (Keuangan)',
+            'message' => 'Omset, laba, dan pembayaran online menunggu dicek. Teliti ya!',
+        ],
+        'gudang' => [
+            'honorific' => 'san',
+            'title_jp' => '倉庫係',
+            'title' => 'Sōko-gakari (Petugas Gudang)',
+            'message' => 'Cek kiriman supplier dan stok yang menipis hari ini.',
+        ],
+        'cs' => [
+            'honorific' => 'san',
+            'title_jp' => '接客係',
+            'title' => 'Sekkyaku-gakari (Layanan Pelanggan)',
+            'message' => 'Pesanan online dan chat pelanggan menunggu balasanmu. 頑張って!',
         ],
         'kasir' => [
             'honorific' => 'san',
@@ -81,7 +105,8 @@ class Greeting
             'title' => $style['title'],
             'message' => $style['message'],
             'proverb' => ['jp' => $proverb[0], 'romaji' => $proverb[1], 'meaning' => $proverb[2]],
-            'is_admin' => $role === 'super-admin',
+            // Melihat angka seluruh toko (bukan hanya transaksinya sendiri)
+            'sees_all' => $user->can('view-reports'),
         ];
     }
 }

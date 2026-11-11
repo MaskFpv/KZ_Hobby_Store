@@ -42,5 +42,17 @@ class ProductSeeder extends Seeder
                 'type' => $type,
             ]);
         }
+
+        // Data tampilan website (aman dijalankan ulang: tidak menyentuh stok/harga)
+        $storefront = [
+            'GSC-NEN-2367' => ['is_featured' => true],
+            'MXF-FIG-0612' => ['is_featured' => true],
+            'BAN-RG-0032' => ['is_featured' => true],
+            'BAN-MG-0255' => ['is_featured' => true, 'po_deadline' => now()->addDays(21)->toDateString(), 'release_estimate' => 'Maret 2027'],
+            'GSC-SCL-0711' => ['is_featured' => true, 'po_deadline' => now()->addDays(9)->toDateString(), 'release_estimate' => 'Juni 2027'],
+        ];
+        foreach ($storefront as $sku => $attrs) {
+            Product::where('sku', $sku)->update($attrs);
+        }
     }
 }

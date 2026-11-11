@@ -23,7 +23,10 @@ class Menu
             $items = array_values(array_filter($group['items'], fn ($item) => self::visible($item, $user)));
 
             if ($items) {
-                $groups[] = ['title' => $group['title'], 'items' => array_map(fn ($i) => $i + ['is_active' => self::isActive($i)], $items)];
+                $groups[] = ['title' => $group['title'], 'items' => array_map(fn ($i) => $i + [
+                    'is_active' => self::isActive($i),
+                    'badge_count' => isset($i['badge']) ? self::badge($i['badge']) : 0,
+                ], $items)];
             }
         }
 
@@ -48,6 +51,16 @@ class Menu
     public static function flat(?Authenticatable $user): array
     {
         return array_merge(...array_map(fn ($g) => $g['items'], self::forUser($user)) ?: [[]]);
+    }
+
+    /** Angka badge di sidebar: jumlah hal yang perlu ditindaklanjuti. */
+    public static function badge(string $key): int
+    {
+        return match ($key) {
+            'orders' => \App\Models\Order::whereIn('status', ['paid', 'processing', 'ready_pickup'])->count(),
+            'chats' => \App\Models\Conversation::awaitingStaff()->count(),
+            default => 0,
+        };
     }
 
     private static function visible(array $item, Authenticatable $user): bool

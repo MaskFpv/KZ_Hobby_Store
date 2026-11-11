@@ -4,14 +4,21 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <h2 class="h5 m-0">Riwayat Transaksi</h2>
+                <div>
+                    <h2 class="h5 m-0">Riwayat Transaksi</h2>
+                    @cannot('view-reports')
+                        <small class="text-muted">Menampilkan transaksi yang Anda layani.</small>
+                    @endcannot
+                </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('transaction-list-exportPdf', $filters) }}" class="btn btn-danger">
-                        <i class="bi bi-file-earmark-pdf"></i> Export PDF
-                    </a>
-                    <a href="{{ route('list-export', $filters) }}" class="btn btn-success">
-                        <i class="bi bi-file-earmark-excel"></i> Export XLS
-                    </a>
+                    @can('view-reports')
+                        <a href="{{ route('transaction-list-exportPdf', $filters) }}" class="btn btn-danger">
+                            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                        </a>
+                        <a href="{{ route('list-export', $filters) }}" class="btn btn-success">
+                            <i class="bi bi-file-earmark-excel"></i> Export XLS
+                        </a>
+                    @endcan
                     @can('create', App\Models\Transaction::class)
                         <a href="{{ route('transaction.index') }}" class="btn btn-primary"><i class="bi bi-calculator"></i> Buka Kasir</a>
                     @endcan
@@ -67,6 +74,9 @@
                                     <span class="fw-semibold">{{ $trx->id }}</span>
                                     @if ($trx->preOrder)
                                         <span class="badge bg-info text-dark" title="Pelunasan {{ $trx->preOrder->code }}">PO</span>
+                                    @endif
+                                    @if ($trx->channel === 'online')
+                                        <span class="badge bg-light text-dark border" title="Pesanan dari website"><i class="bi bi-globe2"></i> Online</span>
                                     @endif
                                 </td>
                                 <td data-order="{{ $trx->date->format('Y-m-d') }}">{{ $trx->date->format('d-m-Y') }}</td>

@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
         // Nama hari/bulan berbahasa Indonesia (translatedFormat, diffForHumans)
         Carbon::setLocale(config('app.locale'));
 
+        // Jumlah item keranjang di header website
+        View::composer('layouts.store', fn ($view) => $view->with('cartCount', app(\App\Services\CartService::class)->count()));
+
         // Data menu untuk layout utama (sidebar + judul halaman)
         View::composer('layouts.app', function ($view) {
             $view->with([

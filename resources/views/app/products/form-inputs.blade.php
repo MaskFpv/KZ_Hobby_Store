@@ -110,6 +110,44 @@
                 <small class="form-text text-muted d-block">Pre-Order tidak muncul di Kasir; dijual lewat Manajemen PO.</small>
             </div>
 
+            {{-- Website pelanggan --}}
+            <div class="col-12">
+                <div class="border rounded-3 p-3">
+                    <div class="fw-bold mb-2"><i class="bi bi-globe2"></i> Tampilan Website</div>
+                    <div class="d-flex flex-wrap gap-4 mb-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="is_published" value="1" id="is_published"
+                                @checked(old('is_published', $editing ? $product->is_published : true))>
+                            <label class="form-check-label" for="is_published">Tampil di website</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="is_featured" value="1" id="is_featured"
+                                @checked(old('is_featured', $editing ? $product->is_featured : false))>
+                            <label class="form-check-label" for="is_featured">Unggulan (hero beranda)</label>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="po_deadline" class="form-label">Batas PO <small class="text-muted">(khusus Pre-Order)</small></label>
+                            <input type="date" name="po_deadline" id="po_deadline" class="form-control @error('po_deadline') is-invalid @enderror"
+                                value="{{ old('po_deadline', $editing ? $product->po_deadline?->format('Y-m-d') : '') }}">
+                            @error('po_deadline')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label for="release_estimate" class="form-label">Estimasi Rilis <small class="text-muted">(teks bebas)</small></label>
+                            <input type="text" name="release_estimate" id="release_estimate" maxlength="50" placeholder="Contoh: Mei 2027"
+                                class="form-control @error('release_estimate') is-invalid @enderror"
+                                value="{{ old('release_estimate', $editing ? $product->release_estimate : '') }}">
+                            @error('release_estimate')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-12">
                 <label for="description" class="form-label">Deskripsi</label>
                 <textarea name="description" id="description" rows="4" maxlength="2000"

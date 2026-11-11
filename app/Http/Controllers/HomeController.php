@@ -24,7 +24,7 @@ class HomeController extends Controller
         $today = now()->toDateString();
 
         $trxToday = Transaction::whereDate('date', $today)
-            ->when(! $greeting['is_admin'], fn ($q) => $q->where('user_id', $user->id));
+            ->when(! $greeting['sees_all'], fn ($q) => $q->where('user_id', $user->id));
 
         $stats = [
             'trx_count' => (clone $trxToday)->count(),
@@ -56,21 +56,18 @@ class HomeController extends Controller
             ['route' => 'transaction.index', 'icon' => 'bi-calculator', 'tone' => 'tone-sakura', 'label' => 'Buka Kasir', 'hint' => 'Mulai transaksi baru', 'can' => ['create', Transaction::class]],
             ['route' => 'pre-orders.create', 'icon' => 'bi-hourglass-split', 'tone' => 'tone-lavender', 'label' => 'Buat Pre-Order', 'hint' => 'Catat pesanan & DP', 'can' => ['create', PreOrder::class]],
             ['route' => 'customers.create', 'icon' => 'bi-person-plus', 'tone' => 'tone-sky', 'label' => 'Member Baru', 'hint' => 'Daftarkan kolektor', 'can' => ['create', \App\Models\Customer::class]],
+            ['route' => 'online-orders.index', 'icon' => 'bi-globe2', 'tone' => 'tone-sakura', 'label' => 'Pesanan Online', 'hint' => 'Siapkan & serahkan', 'can' => ['view-any', \App\Models\Order::class]],
+            ['route' => 'chats.index', 'icon' => 'bi-chat-heart', 'tone' => 'tone-lavender', 'label' => 'Chat Pelanggan', 'hint' => 'Balas pertanyaan member', 'can' => ['view-any', \App\Models\Conversation::class]],
             ['route' => 'products.index', 'icon' => 'bi-search', 'tone' => 'tone-matcha', 'label' => 'Cek Katalog', 'hint' => 'Harga & stok produk', 'can' => ['view-any', Product::class]],
-            ['route' => 'dashboard.index', 'icon' => 'bi-speedometer2', 'tone' => 'tone-yuzu', 'label' => 'Dashboard', 'hint' => 'Omset & grafik', 'can' => ['view-dashboard', []], 'admin' => true],
+            ['route' => 'dashboard.index', 'icon' => 'bi-speedometer2', 'tone' => 'tone-yuzu', 'label' => 'Dashboard', 'hint' => 'Ringkasan toko', 'can' => ['view-dashboard', []]],
             ['route' => 'stock-ins.create', 'icon' => 'bi-truck', 'tone' => 'tone-sky', 'label' => 'Catat Stok Masuk', 'hint' => 'Restock dari supplier', 'can' => ['create', StockIn::class]],
             ['route' => 'stock-opnames.create', 'icon' => 'bi-clipboard-check', 'tone' => 'tone-matcha', 'label' => 'Stok Opname', 'hint' => 'Cocokkan stok fisik', 'can' => ['create', \App\Models\StockOpname::class]],
-            ['route' => 'transaction.laporan', 'icon' => 'bi-file-earmark-bar-graph', 'tone' => 'tone-yuzu', 'label' => 'Laporan', 'hint' => 'Rekap per periode', 'can' => ['view-any', Transaction::class], 'admin' => true],
+            ['route' => 'transaction.laporan', 'icon' => 'bi-file-earmark-bar-graph', 'tone' => 'tone-yuzu', 'label' => 'Laporan', 'hint' => 'Rekap per periode', 'can' => ['view-reports', []]],
         ];
 
-        $isAdmin = $user->isSuperAdmin();
-
-        return array_values(array_filter($all, function ($a) use ($user, $isAdmin) {
-            if (! empty($a['admin']) && ! $isAdmin) {
-                return false;
-            }
-
-            return Route::has($a['route']) && $user->can($a['can'][0], $a['can'][1]);
-        }));
+        return array_values(array_filter(
+            $all,
+            fn ($a) => Route::has($a['route']) && $user->can($a['can'][0], $a['can'][1])
+        ));
     }
 }

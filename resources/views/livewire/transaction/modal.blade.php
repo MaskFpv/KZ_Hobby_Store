@@ -61,7 +61,7 @@
                             <label class="form-label">Metode Pembayaran</label>
                             <select wire:model="payment_method"
                                 class="form-select @error('payment_method') is-invalid @enderror">
-                                @foreach (\App\Models\Transaction::PAYMENT_METHODS as $value => $label)
+                                @foreach (\App\Models\Transaction::POS_METHODS as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
                             </select>

@@ -24,5 +24,11 @@ class CustomerSeeder extends Seeder
         foreach ($members as $member) {
             Customer::firstOrCreate(['email' => $member['email']], $member);
         }
+
+        // Akun website demo (login di /masuk): ayu@example.com / member123
+        $demo = Customer::where('email', 'ayu@example.com')->first();
+        if (! $demo->hasWebAccount()) {
+            $demo->forceFill(['password' => 'member123', 'terms_accepted_at' => now()])->save();
+        }
     }
 }

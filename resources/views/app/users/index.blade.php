@@ -42,7 +42,7 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     @foreach ($user->roles as $role)
-                                        <span class="badge {{ $role->name === 'super-admin' ? 'bg-primary' : 'bg-secondary' }}">{{ $role->name }}</span>
+                                        <span class="badge {{ $role->name === 'super-admin' ? 'bg-primary' : 'bg-secondary' }}">{{ App\Support\Roles::label($role->name) }}</span>
                                     @endforeach
                                 </td>
                                 <td class="text-center">{{ $user->transactions_count }}</td>

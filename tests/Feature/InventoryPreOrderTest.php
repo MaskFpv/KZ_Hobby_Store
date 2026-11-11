@@ -298,7 +298,7 @@ class InventoryPreOrderTest extends TestCase
     {
         $this->actingAs($this->kasir);
 
-        $this->get(route('stock-ins.index'))->assertOk();
+        $this->get(route('stock-ins.index'))->assertForbidden(); // kasir murni penjualan
         $this->get(route('stock-ins.create'))->assertForbidden();
         $this->get(route('stock-opnames.index'))->assertForbidden();
         $this->get(route('stock-opnames.create'))->assertForbidden();

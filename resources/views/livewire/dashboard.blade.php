@@ -1,4 +1,5 @@
 <div>
+    @if ($canReports)
     {{-- KPI --}}
     <div class="row g-3 mb-3">
         <div class="col-6 col-xl-3">
@@ -35,7 +36,7 @@
             </div>
         </div>
         <div class="col-6 col-xl-3">
-            @if ($isAdmin)
+            @if ($canProfit)
                 <div class="stat-card">
                     <span class="stat-icon tone-yuzu"><i class="bi bi-graph-up-arrow"></i></span>
                     <div>
@@ -130,39 +131,46 @@
 
         {{-- Stok & PO --}}
         <div class="col-lg-12 col-xl-4">
-            <div class="panel">
-                <h2 class="panel-title">
-                    Stok Menipis
-                    <a href="{{ route('products.index', ['stock_status' => 'low']) }}" class="small fw-normal">Lihat</a>
-                </h2>
-                @forelse ($lowStockProducts as $p)
-                    <a href="{{ route('products.show', $p) }}" class="list-row text-decoration-none text-reset">
-                        <div class="text-truncate">
-                            <div class="fw-semibold text-truncate">{{ $p->name }}</div>
-                            <small class="text-muted">{{ $p->sku }}</small>
-                        </div>
-                        <span class="badge {{ $p->stock == 0 ? 'bg-danger' : 'bg-warning text-dark' }}">{{ $p->stock == 0 ? 'Habis' : $p->stock . ' sisa' }}</span>
-                    </a>
-                @empty
-                    <div class="empty-state"><i class="bi bi-check2-circle"></i>Semua stok aman</div>
-                @endforelse
-
-                <hr>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="fw-bold">Antrean Pre-Order</div>
-                        <small class="text-muted">{{ $poSummary['waiting'] ?? 0 }} menunggu &middot; {{ $poSummary['arrived'] ?? 0 }} siap diambil</small>
-                    </div>
-                    <a href="{{ route('pre-orders.index') }}" class="btn btn-sm btn-outline-primary">Kelola</a>
-                </div>
-                <small class="text-muted d-block mt-1">Sisa tagihan PO: <b>Rp {{ number_format($poOutstanding, 0, ',', '.') }}</b></small>
-            </div>
+            @include('livewire.partials.dashboard-stock')
         </div>
     </div>
 
     <p class="small text-muted mb-0">{{ $totalProducts }} produk &middot; {{ $totalCustomers }} pelanggan terdaftar. Omset PO dihitung saat pelunasan.</p>
+    @else
+    {{-- Tanpa akses laporan (Gudang, CS): ringkasan operasional saja --}}
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon tone-yuzu"><i class="bi bi-exclamation-triangle"></i></span>
+                <div><p class="stat-label">Stok menipis</p><p class="stat-value">{{ $lowStockCount }}</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon tone-sky"><i class="bi bi-truck"></i></span>
+                <div><p class="stat-label">Kiriman belum diterima</p><p class="stat-value">{{ $pendingStockIns }}</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon tone-lavender"><i class="bi bi-hourglass-split"></i></span>
+                <div><p class="stat-label">PO menunggu barang</p><p class="stat-value">{{ $poSummary['waiting'] ?? 0 }}</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon tone-matcha"><i class="bi bi-gift"></i></span>
+                <div><p class="stat-label">PO siap diambil</p><p class="stat-value">{{ $poSummary['arrived'] ?? 0 }}</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-xl-6">@include('livewire.partials.dashboard-stock')</div>
+    </div>
+    @endif
 </div>
 
+@if ($canReports)
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
@@ -230,3 +238,4 @@
         })();
     </script>
 @endpush
+@endif

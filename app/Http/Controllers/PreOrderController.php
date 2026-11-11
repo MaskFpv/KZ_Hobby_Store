@@ -120,7 +120,7 @@ class PreOrderController extends Controller
 
         $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
-            'payment_method' => ['required', Rule::in(array_keys(Transaction::PAYMENT_METHODS))],
+            'payment_method' => ['required', Rule::in(array_keys(Transaction::POS_METHODS))],
             'payment_notes' => ['nullable', 'string', 'max:255'],
         ], [], ['amount' => 'nominal', 'payment_method' => 'metode pembayaran']);
 
@@ -151,7 +151,7 @@ class PreOrderController extends Controller
         $this->authorize('update', $preOrder);
 
         $request->validate([
-            'payment_method' => ['required', Rule::in(array_keys(Transaction::PAYMENT_METHODS))],
+            'payment_method' => ['required', Rule::in(array_keys(Transaction::POS_METHODS))],
         ]);
 
         $transaction = $this->service->complete($preOrder, $request->payment_method, $request->user()->id);

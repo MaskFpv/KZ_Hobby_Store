@@ -23,6 +23,9 @@
                     title="{{ $item['label'] }}" @if ($item['is_active']) aria-current="page" @endif>
                     <i class="bi {{ $item['icon'] }}"></i>
                     <span>{{ $item['label'] }}</span>
+                    @if ($item['badge_count'])
+                        <b class="side-badge" title="Perlu ditindaklanjuti">{{ $item['badge_count'] }}</b>
+                    @endif
                 </a>
             @endforeach
         @endforeach
@@ -33,7 +36,7 @@
             <span class="avatar">{{ strtoupper(mb_substr($authUser->name, 0, 1)) }}</span>
             <div class="user-text text-truncate">
                 <div class="user-name text-truncate">{{ $authUser->name }}</div>
-                <div class="user-role">{{ $roleName === 'super-admin' ? 'Super Admin' : ucfirst($roleName ?? 'User') }}</div>
+                <div class="user-role">{{ App\Support\Roles::label($roleName) }}</div>
             </div>
         </div>
     @endif

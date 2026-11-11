@@ -24,7 +24,7 @@ class BrandImport extends BaseRowImport
         $data = array_filter([
             'country' => $this->pick($row, ['negara_asal', 'negara', 'country']),
             'description' => $this->pick($row, ['deskripsi', 'description']),
-        ], fn ($v) => $v !== null);
+        ], fn($v) => $v !== null);
 
         $brand = Brand::where('name', $name)->first();
 

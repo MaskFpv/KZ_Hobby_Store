@@ -102,7 +102,7 @@
                                     <div class="col-md-6">
                                         <label for="payment_method" class="form-label">Metode Pembayaran DP</label>
                                         <select name="payment_method" id="payment_method" class="form-select @error('payment_method') is-invalid @enderror">
-                                            @foreach (App\Models\Transaction::PAYMENT_METHODS as $value => $label)
+                                            @foreach (App\Models\Transaction::POS_METHODS as $value => $label)
                                                 <option value="{{ $value }}" @selected(old('payment_method', 'cash') === $value)>{{ $label }}</option>
                                             @endforeach
                                         </select>

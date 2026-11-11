@@ -40,7 +40,7 @@ class PreOrderRequest extends FormRequest
             'unit_price' => ['required', 'numeric', 'min:0', 'max:9999999999999'],
             'order_date' => ['required', 'date', 'before_or_equal:today'],
             'dp_amount' => ['nullable', 'numeric', 'min:0'],
-            'payment_method' => ['required', Rule::in(array_keys(Transaction::PAYMENT_METHODS))],
+            'payment_method' => ['required', Rule::in(array_keys(Transaction::POS_METHODS))],
         ]);
     }
 

@@ -106,7 +106,7 @@
                                         class="form-control" value="{{ old('amount') }}" placeholder="Nominal">
                                 </div>
                                 <select name="payment_method" class="form-select mb-2">
-                                    @foreach (App\Models\Transaction::PAYMENT_METHODS as $value => $label)
+                                    @foreach (App\Models\Transaction::POS_METHODS as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
@@ -134,7 +134,7 @@
                                     <p class="mb-2">Sudah lunas. Metode dicatat di faktur:</p>
                                 @endif
                                 <select name="payment_method" class="form-select mb-2">
-                                    @foreach (App\Models\Transaction::PAYMENT_METHODS as $value => $label)
+                                    @foreach (App\Models\Transaction::POS_METHODS as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </select>

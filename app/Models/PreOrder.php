@@ -16,6 +16,7 @@ class PreOrder extends Model
     public const CODE_PREFIX = 'PO';
 
     public const STATUSES = [
+        'pending_payment' => 'Menunggu DP',
         'waiting' => 'Menunggu Barang',
         'arrived' => 'Barang Tiba',
         'completed' => 'Selesai / Lunas',
@@ -34,6 +35,7 @@ class PreOrder extends Model
         'order_date',
         'estimated_arrival',
         'status',
+        'channel',
         'transaction_id',
         'notes',
     ];
@@ -74,6 +76,12 @@ class PreOrder extends Model
         return $this->belongsTo(Transaction::class);
     }
 
+    /** Tagihan pembayaran online (DP/cicilan/pelunasan dari website). */
+    public function onlinePayments()
+    {
+        return $this->morphMany(OnlinePayment::class, 'payable');
+    }
+
     /** Hitung ulang paid_amount dari tabel pembayaran. */
     public function refreshPaidAmount(): void
     {
@@ -99,6 +107,7 @@ class PreOrder extends Model
     public function getStatusBadgeAttribute(): string
     {
         return [
+            'pending_payment' => 'bg-light text-dark border',
             'waiting' => 'bg-warning text-dark',
             'arrived' => 'bg-info text-dark',
             'completed' => 'bg-success',
@@ -108,6 +117,7 @@ class PreOrder extends Model
 
     public function isOpen(): bool
     {
-        return in_array($this->status, ['waiting', 'arrived'], true);
+        // Belum selesai/batal. Antrean stok tetap hanya untuk status 'waiting' (lihat StockService).
+        return in_array($this->status, ['pending_payment', 'waiting', 'arrived'], true);
     }
 }

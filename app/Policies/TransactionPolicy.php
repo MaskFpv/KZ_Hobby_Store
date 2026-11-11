@@ -23,7 +23,9 @@ class TransactionPolicy
      */
     public function view(User $user, Transaction $model): bool
     {
-        return $user->hasPermissionTo('view transactions');
+        // Tanpa akses laporan (mis. kasir): hanya nota transaksinya sendiri
+        return $user->hasPermissionTo('view transactions')
+            && ($user->hasPermissionTo('view reports') || $model->user_id === $user->id);
     }
 
     /**

@@ -8,10 +8,14 @@ use Illuminate\Http\Request;
 class Authenticate extends Middleware
 {
     /**
-     * Get the path the user should be redirected to when they are not authenticated.
+     * Belum login: staf (/admin/...) ke login panel, pelanggan ke halaman Masuk website.
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('login');
+        if ($request->expectsJson()) {
+            return null;
+        }
+
+        return $request->is('admin', 'admin/*') ? route('login') : route('store.login');
     }
 }

@@ -28,7 +28,7 @@
             <div class="stat-card">
                 <span class="stat-icon tone-sakura"><i class="bi bi-receipt"></i></span>
                 <div>
-                    <p class="stat-label">{{ $g['is_admin'] ? 'Transaksi hari ini' : 'Transaksimu hari ini' }}</p>
+                    <p class="stat-label">{{ $g['sees_all'] ? 'Transaksi hari ini' : 'Transaksimu hari ini' }}</p>
                     <p class="stat-value">{{ $stats['trx_count'] }}</p>
                 </div>
             </div>
@@ -37,7 +37,7 @@
             <div class="stat-card">
                 <span class="stat-icon tone-matcha"><i class="bi bi-cash-stack"></i></span>
                 <div>
-                    <p class="stat-label">{{ $g['is_admin'] ? 'Omset hari ini' : 'Penjualanmu hari ini' }}</p>
+                    <p class="stat-label">{{ $g['sees_all'] ? 'Omset hari ini' : 'Penjualanmu hari ini' }}</p>
                     <p class="stat-value">Rp {{ number_format($stats['trx_total'], 0, ',', '.') }}</p>
                 </div>
             </div>
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="col-6 col-xl-3">
-            @if ($g['is_admin'])
+            @if ($g['sees_all'])
                 <div class="stat-card">
                     <span class="stat-icon tone-yuzu"><i class="bi bi-exclamation-triangle"></i></span>
                     <div>

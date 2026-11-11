@@ -41,6 +41,10 @@ class Product extends Model
         'type',
         'image',
         'description',
+        'is_published',
+        'is_featured',
+        'po_deadline',
+        'release_estimate',
     ];
 
     protected $searchableFields = ['name', 'sku'];
@@ -49,6 +53,9 @@ class Product extends Model
         'purchase_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
         'stock' => 'integer',
+        'is_published' => 'boolean',
+        'is_featured' => 'boolean',
+        'po_deadline' => 'date',
     ];
 
     protected static function booted(): void
@@ -164,6 +171,12 @@ class Product extends Model
         $path = $this->image ? storage_path('app/public/' . $this->image) : null;
 
         return $path && is_file($path) ? $path : null;
+    }
+
+    /** PO masih bisa dipesan: produk PO dan deadline belum lewat (atau tanpa deadline). */
+    public function isPreOrderOpen(): bool
+    {
+        return $this->type === 'pre_order' && (! $this->po_deadline || ! $this->po_deadline->isPast() || $this->po_deadline->isToday());
     }
 
     public function getMarginAttribute(): float

@@ -40,14 +40,8 @@
                 <label class="border rounded-3 p-3 d-flex gap-2 align-items-start" style="min-width: 220px; cursor: pointer;">
                     <input class="form-check-input mt-1" type="radio" name="role" value="{{ $role }}" @checked($current === $role)>
                     <span>
-                        <span class="fw-bold d-block">{{ $role === 'super-admin' ? 'Super Admin' : ucfirst($role) }}</span>
-                        <small class="text-muted">
-                            {{ match ($role) {
-                                'super-admin' => 'Akses penuh: laporan, stok, user, pengaturan.',
-                                'kasir' => 'Kasir, pre-order, pelanggan, lihat katalog.',
-                                default => 'Hak akses sesuai pengaturan role.',
-                            } }}
-                        </small>
+                        <span class="fw-bold d-block">{{ App\Support\Roles::label($role) }}</span>
+                        <small class="text-muted">{{ App\Support\Roles::description($role) }}</small>
                     </span>
                 </label>
             @endforeach

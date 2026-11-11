@@ -44,7 +44,7 @@ class PanelUiTest extends TestCase
         $admin = Greeting::for($this->admin);
         $this->assertSame('おはようございます', $admin['jp']);
         $this->assertSame('Admin-sama', $admin['name']);
-        $this->assertSame('店長', $admin['title_jp']);
+        $this->assertSame('オーナー', $admin['title_jp']);
 
         Carbon::setTestNow(Carbon::create(2026, 11, 9, 19, 30, 0, 'Asia/Jakarta'));
         $kasir = Greeting::for($this->kasir);
@@ -81,21 +81,23 @@ class PanelUiTest extends TestCase
     public function test_dashboard_and_report_render_and_profit_is_admin_only(): void
     {
         $this->actingAs($this->admin)->get(route('dashboard.index'))->assertOk()->assertSee('Laba kotor');
-        $this->actingAs($this->kasir)->get(route('dashboard.index'))->assertOk()->assertDontSee('Laba kotor');
 
         $this->actingAs($this->admin)->get(route('transaction.laporan', ['from' => now()->startOfMonth()->toDateString(), 'to' => now()->toDateString()]))
             ->assertOk()->assertSee('Laba kotor');
-        $this->actingAs($this->kasir)->get(route('transaction.laporan'))->assertOk()->assertDontSee('Laba kotor');
-
-        $this->get(route('transaction.data', ['payment_method' => 'cash']))->assertOk();
         $this->get(route('list-export', ['from' => now()->toDateString()]))->assertOk()->assertDownload();
+
+        // Kasir murni penjualan: tanpa dashboard, laporan, dan export
+        $this->actingAs($this->kasir)->get(route('dashboard.index'))->assertForbidden();
+        $this->get(route('transaction.laporan'))->assertForbidden();
+        $this->get(route('list-export'))->assertForbidden();
+        $this->get(route('transaction.data', ['payment_method' => 'cash']))->assertOk()->assertDontSee('Export PDF');
     }
 
     public function test_login_page_and_disabled_public_routes(): void
     {
-        $this->get('/login')->assertOk()->assertSee('いらっしゃいませ');
-        $this->get('/register')->assertNotFound();
-        $this->get('/password/reset')->assertNotFound();
+        $this->get('/admin/login')->assertOk()->assertSee('いらっしゃいませ');
+        $this->get('/admin/register')->assertNotFound();
+        $this->get('/admin/password/reset')->assertNotFound();
         $this->get('/api/user')->assertNotFound();
     }
 

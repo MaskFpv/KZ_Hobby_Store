@@ -11,6 +11,7 @@
 | active : pola routeIs() supaya menu tetap aktif di halaman create/edit/show.
 | can    : [ability, model class] dicek dengan Gate (policy). Kosongkan = semua user.
 | icon   : nama ikon Bootstrap Icons (https://icons.getbootstrap.com).
+| badge  : (opsional) kunci angka kecil di samping menu, dihitung di App\Support\Menu::badge().
 |
 | Menambah halaman baru = tambah satu baris di sini.
 */
@@ -28,8 +29,11 @@ return [
         'items' => [
             ['route' => 'transaction.index', 'active' => 'transaction.index', 'label' => 'Kasir (POS)', 'icon' => 'bi-calculator', 'can' => ['create', App\Models\Transaction::class]],
             ['route' => 'transaction.data', 'active' => ['transaction.data', 'transaction.invoice'], 'label' => 'Riwayat Transaksi', 'icon' => 'bi-receipt', 'can' => ['view-any', App\Models\Transaction::class]],
+            ['route' => 'online-orders.index', 'active' => 'online-orders.*', 'label' => 'Pesanan Online', 'icon' => 'bi-globe2', 'can' => ['view-any', App\Models\Order::class], 'badge' => 'orders'],
+            ['route' => 'chats.index', 'active' => 'chats.*', 'label' => 'Chat Pelanggan', 'icon' => 'bi-chat-heart', 'can' => ['view-any', App\Models\Conversation::class], 'badge' => 'chats'],
             ['route' => 'pre-orders.index', 'active' => 'pre-orders.*', 'label' => 'Manajemen Pre-Order', 'icon' => 'bi-hourglass-split', 'can' => ['view-any', App\Models\PreOrder::class]],
-            ['route' => 'transaction.laporan', 'active' => 'transaction.laporan', 'label' => 'Laporan Penjualan', 'icon' => 'bi-file-earmark-bar-graph', 'can' => ['view-any', App\Models\Transaction::class]],
+            ['route' => 'online-payments.index', 'active' => 'online-payments.*', 'label' => 'Pembayaran Online', 'icon' => 'bi-credit-card-2-front', 'can' => ['view-any', App\Models\OnlinePayment::class]],
+            ['route' => 'transaction.laporan', 'active' => 'transaction.laporan', 'label' => 'Laporan Penjualan', 'icon' => 'bi-file-earmark-bar-graph', 'can' => ['view-reports']],
         ],
     ],
     [

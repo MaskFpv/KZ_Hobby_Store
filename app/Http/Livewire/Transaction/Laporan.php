@@ -17,6 +17,8 @@ class Laporan extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->can('view-reports'), 403);
+
         $this->start_date ??= now()->startOfMonth()->toDateString();
         $this->end_date ??= now()->toDateString();
     }
@@ -54,7 +56,7 @@ class Laporan extends Component
 
         $summary['items'] = (int) (clone $details)->sum('transaction_details.qty');
 
-        if (auth()->user()->isSuperAdmin()) {
+        if (auth()->user()->can('view-profit')) {
             $margin = (float) (clone $details)->sum(DB::raw('transaction_details.sub_total - transaction_details.purchase_price * transaction_details.qty'));
             $summary['profit'] = $margin - $summary['discount'];
         }

@@ -21,18 +21,29 @@ class Dashboard extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->can('view-dashboard'), 403);
+
         $this->year = (int) now()->year;
     }
 
     /** Pilihan tahun di grafik berubah: kirim data baru ke Chart.js. */
     public function updatedYear()
     {
+        abort_unless(auth()->user()->can('view-reports'), 403);
+
         $this->year = (int) $this->year;
         $this->dispatchBrowserEvent('dashboard-charts', $this->chartData());
     }
 
     public function render()
     {
+        $user = auth()->user();
+
+        // Bagian penjualan (omset, grafik, terlaris) hanya untuk yang punya akses laporan
+        if (! $user->can('view-reports')) {
+            return view('livewire.dashboard', ['canReports' => false] + $this->operationalData());
+        }
+
         $today = Carbon::today();
         $monthStart = $today->copy()->startOfMonth();
         $lastMonthStart = $monthStart->copy()->subMonthNoOverflow();
@@ -46,22 +57,32 @@ class Dashboard extends Component
         $firstYear = (int) (Transaction::min(DB::raw('YEAR(date)')) ?: $today->year);
 
         return view('livewire.dashboard', [
-            'isAdmin' => auth()->user()->isSuperAdmin(),
+            'canReports' => true,
+            'canProfit' => $user->can('view-profit'),
             'todayCount' => (clone $todayQuery)->count(),
             'todayOmset' => (float) (clone $todayQuery)->sum('total_price'),
             'monthOmset' => $monthOmset,
             'growth' => $lastMonthOmset > 0 ? round(($monthOmset - $lastMonthOmset) / $lastMonthOmset * 100, 1) : null,
-            'monthProfit' => $this->grossProfit($monthStart, $today),
+            'monthProfit' => $user->can('view-profit') ? $this->grossProfit($monthStart, $today) : null,
             'years' => range($today->year, min($firstYear, $today->year)),
             'chart' => $this->chartData(),
             'topProducts' => $this->topProducts(),
-            'lowStockProducts' => Product::readyStock()->lowStock()->orderBy('stock')->limit(6)->get(['id', 'name', 'sku', 'stock']),
             'recentTransactions' => Transaction::with('customer:id,nama')->latest('date')->latest('id')->limit(6)->get(),
-            'poSummary' => PreOrder::selectRaw('status, COUNT(*) as total')->whereIn('status', ['waiting', 'arrived'])->groupBy('status')->pluck('total', 'status'),
-            'poOutstanding' => (float) PreOrder::whereIn('status', ['waiting', 'arrived'])->selectRaw('SUM(total_price - paid_amount) as s')->value('s'),
             'totalProducts' => Product::count(),
             'totalCustomers' => Customer::count(),
-        ]);
+        ] + $this->operationalData());
+    }
+
+    /** Data stok & antrean PO: dipakai semua role yang bisa membuka dashboard. */
+    private function operationalData(): array
+    {
+        return [
+            'lowStockProducts' => Product::readyStock()->lowStock()->orderBy('stock')->limit(6)->get(['id', 'name', 'sku', 'stock']),
+            'lowStockCount' => Product::readyStock()->lowStock()->count(),
+            'pendingStockIns' => \App\Models\StockIn::whereIn('status', ['ordered', 'shipped'])->count(),
+            'poSummary' => PreOrder::selectRaw('status, COUNT(*) as total')->whereIn('status', ['waiting', 'arrived'])->groupBy('status')->pluck('total', 'status'),
+            'poOutstanding' => (float) PreOrder::whereIn('status', ['waiting', 'arrived'])->selectRaw('SUM(total_price - paid_amount) as s')->value('s'),
+        ];
     }
 
     private function omset(Carbon $from, Carbon $to): float

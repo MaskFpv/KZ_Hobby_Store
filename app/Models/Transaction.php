@@ -11,12 +11,25 @@ class Transaction extends Model
     use HasFactory;
     use Searchable;
 
+    /** Semua metode (untuk label & filter). 'va' & 'card' hanya dari pembayaran online. */
     public const PAYMENT_METHODS = [
         'cash' => 'Tunai',
         'debit' => 'Debit',
         'qris' => 'QRIS',
         'transfer' => 'Transfer',
+        'va' => 'Virtual Account',
+        'card' => 'Kartu Kredit/Debit',
     ];
+
+    /** Metode yang bisa dipilih staf di kasir / pembayaran PO di toko. */
+    public const POS_METHODS = [
+        'cash' => 'Tunai',
+        'debit' => 'Debit',
+        'qris' => 'QRIS',
+        'transfer' => 'Transfer',
+    ];
+
+    public const CHANNELS = ['pos' => 'Kasir', 'online' => 'Online'];
 
     /** ID = nomor faktur YYYYMMDD0001, diisi manual. */
     public $incrementing = false;
@@ -34,6 +47,7 @@ class Transaction extends Model
         'paid_amount',
         'change_amount',
         'payment_method',
+        'channel',
         'keterangan',
     ];
 
@@ -81,6 +95,11 @@ class Transaction extends Model
     public function preOrder()
     {
         return $this->hasOne(PreOrder::class);
+    }
+
+    public function order()
+    {
+        return $this->hasOne(Order::class);
     }
 
     public function getPaymentMethodLabelAttribute(): string

@@ -42,16 +42,18 @@
                     <table class="table table-sm w-auto">
                         <tr><th class="pe-4">Kategori</th><td>{{ $product->category->name }}</td></tr>
                         <tr><th class="pe-4">Brand</th><td>{{ $product->brand->name }}</td></tr>
-                        @can('update', $product)
+                        {{-- Harga modal: Keuangan (view-profit) & yang mengelola produk (Gudang/Admin) --}}
+                        @php $showCost = auth()->user()->can('view-profit') || auth()->user()->can('update', $product); @endphp
+                        @if ($showCost)
                             <tr><th class="pe-4">Harga Modal</th><td>Rp {{ number_format($product->purchase_price, 0, ',', '.') }}</td></tr>
-                        @endcan
+                        @endif
                         <tr><th class="pe-4">Harga Jual</th><td class="fw-bold">Rp {{ number_format($product->selling_price, 0, ',', '.') }}</td></tr>
-                        @can('update', $product)
+                        @if ($showCost)
                             <tr>
                                 <th class="pe-4">Margin</th>
                                 <td class="{{ $product->margin < 0 ? 'text-danger' : 'text-success' }}">Rp {{ number_format($product->margin, 0, ',', '.') }}</td>
                             </tr>
-                        @endcan
+                        @endif
                         <tr>
                             <th class="pe-4">Stok</th>
                             <td>

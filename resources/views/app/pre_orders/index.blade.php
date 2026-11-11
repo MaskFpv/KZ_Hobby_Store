@@ -88,6 +88,7 @@
                                 <tr>
                                     <td>
                                         <a href="{{ route('pre-orders.show', $po) }}" class="fw-semibold text-decoration-none">{{ $po->code }}</a>
+                                        @if ($po->channel === 'online')<span class="badge bg-light text-dark border" title="Dipesan lewat website"><i class="bi bi-globe2"></i> Online</span>@endif
                                         <div class="small text-muted">{{ $po->order_date->format('d-m-Y') }}</div>
                                     </td>
                                     <td>

@@ -22,6 +22,12 @@ class ProductRequest extends FormRequest
         if ($this->filled('sku')) {
             $this->merge(['sku' => strtoupper(trim($this->input('sku')))]);
         }
+
+        // Checkbox yang tidak dicentang tidak terkirim: jadikan false
+        $this->merge([
+            'is_published' => $this->boolean('is_published'),
+            'is_featured' => $this->boolean('is_featured'),
+        ]);
     }
 
     public function rules(): array
@@ -42,6 +48,11 @@ class ProductRequest extends FormRequest
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'remove_image' => ['nullable', 'boolean'],
             'description' => ['nullable', 'string', 'max:2000'],
+            // Website pelanggan
+            'is_published' => ['boolean'],
+            'is_featured' => ['boolean'],
+            'po_deadline' => ['nullable', 'date'],
+            'release_estimate' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -66,6 +77,8 @@ class ProductRequest extends FormRequest
             'type' => 'tipe',
             'image' => 'gambar',
             'description' => 'deskripsi',
+            'po_deadline' => 'batas PO',
+            'release_estimate' => 'estimasi rilis',
         ];
     }
 }

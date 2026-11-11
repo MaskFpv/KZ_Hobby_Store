@@ -6,10 +6,10 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /** Tanpa frontend publik: root diarahkan ke /home, tamu diarahkan ke login. */
-    public function test_root_redirects_guest_to_login(): void
+    /** Panel staf ada di /admin; tamu diarahkan ke login staf. */
+    public function test_admin_panel_requires_login(): void
     {
-        $this->get('/')->assertRedirect('/home');
-        $this->get('/home')->assertRedirect('/login');
+        $this->get('/admin/home')->assertRedirect('/admin/login');
+        $this->get('/admin/login')->assertOk();
     }
 }

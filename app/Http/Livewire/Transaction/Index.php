@@ -236,7 +236,7 @@ class Index extends Component
 
         $rules = [
             'date' => 'required|date',
-            'payment_method' => 'required|in:' . implode(',', array_keys(Transaction::PAYMENT_METHODS)),
+            'payment_method' => 'required|in:' . implode(',', array_keys(Transaction::POS_METHODS)),
             'discount' => 'nullable|numeric|min:0',
             'keterangan' => 'nullable|string|max:1000',
             'customer_id' => 'required|exists:customers,id',

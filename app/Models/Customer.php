@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Customer extends Model
+/**
+ * Pelanggan / member. Bisa login ke website lewat guard "customer"
+ * bila punya password (daftar sendiri di website).
+ */
+class Customer extends Authenticatable
 {
     use HasFactory;
     use Searchable;
@@ -14,6 +18,18 @@ class Customer extends Model
     protected $fillable = ['kode_member', 'nama', 'email', 'telepon', 'alamat'];
 
     protected $searchableFields = ['kode_member', 'nama', 'email', 'telepon'];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = [
+        'password' => 'hashed',
+        'terms_accepted_at' => 'datetime',
+    ];
+
+    public function hasWebAccount(): bool
+    {
+        return ! empty($this->password);
+    }
 
     protected static function booted(): void
     {
@@ -43,5 +59,10 @@ class Customer extends Model
     public function preOrders()
     {
         return $this->hasMany(PreOrder::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
