@@ -93,9 +93,15 @@ class PanelUiTest extends TestCase
         $this->get(route('transaction.data', ['payment_method' => 'cash']))->assertOk()->assertDontSee('Export PDF');
     }
 
+    public function test_panel_has_theme_toggle(): void
+    {
+        $this->actingAs(User::role('kasir')->first())->get(route('home'))->assertOk()
+            ->assertSee('data-theme-toggle', false)->assertSee("localStorage.getItem('kz-theme')", false);
+    }
+
     public function test_login_page_and_disabled_public_routes(): void
     {
-        $this->get('/admin/login')->assertOk()->assertSee('いらっしゃいませ');
+        $this->get('/admin/login')->assertOk()->assertSee('いらっしゃいませ')->assertSee('data-theme-toggle', false);
         $this->get('/admin/register')->assertNotFound();
         $this->get('/admin/password/reset')->assertNotFound();
         $this->get('/api/user')->assertNotFound();

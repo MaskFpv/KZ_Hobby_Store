@@ -13,6 +13,10 @@
 
     <span class="clock-chip d-none d-md-inline" id="topbar-clock"></span>
 
+    <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-label="Ganti mode terang / gelap" title="Mode terang / gelap">
+        <i class="bi bi-moon-stars-fill fs-5"></i><i class="bi bi-sun-fill fs-5"></i>
+    </button>
+
     @auth
         <div class="dropdown">
             <button class="btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu akun">

@@ -8,6 +8,7 @@
 
     <title>{{ $currentMenu['label'] ?? 'Panel' }} · {{ config('store.name') }}</title>
     <link rel="icon" href="{{ asset('img/logo.svg') }}" type="image/svg+xml">
+    @include('partials.theme-init')
 
     {{-- Font & library (CDN, versi dikunci) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,6 +50,7 @@
     @livewireScripts
     <x-livewire-alert::scripts />
 
+    <script src="{{ asset('js/theme.js') }}?v={{ filemtime(public_path('js/theme.js')) }}"></script>
     <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}"></script>
 
     {{-- Notifikasi flash --}}

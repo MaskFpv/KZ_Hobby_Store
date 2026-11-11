@@ -55,6 +55,22 @@
         }).then((res) => { if (res.isConfirmed) form.submit(); });
     });
 
+    /* ---------- Angka statistik menghitung naik (mis. "Rp 1.250.000") ---------- */
+    if (!document.documentElement.classList.contains('reduce-motion')) {
+        document.querySelectorAll('.stat-value').forEach((el) => {
+            const m = el.textContent.trim().match(/^(\D*?)([\d.]+)(\D*)$/);
+            const end = m ? parseInt(m[2].replace(/\./g, ''), 10) : 0;
+            if (!end) return;
+            const t0 = performance.now();
+            const step = (t) => {
+                const k = Math.min(1, (t - t0) / 900);
+                el.textContent = m[1] + Math.round(end * (1 - Math.pow(1 - k, 3))).toLocaleString('id-ID') + m[3];
+                if (k < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        });
+    }
+
     /* ---------- DataTables untuk semua tabel #myTable ---------- */
     if (window.jQuery && jQuery.fn.DataTable) {
         jQuery('#myTable').DataTable({

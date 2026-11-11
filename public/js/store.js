@@ -1,14 +1,15 @@
 /* ==========================================================================
    Website pelanggan — interaksi & animasi.
    Butuh (CDN, opsional): GSAP + ScrollTrigger, Lenis.
-   Tanpa library / dengan "reduce motion": konten tetap tampil normal.
+   Tanpa library / mode "hemat animasi": konten tetap tampil normal.
    ========================================================================== */
 (function () {
     'use strict';
 
     window.__storeReady = true; // dicek oleh skrip pengaman di <head>
     const root = document.documentElement;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Animasi penuh secara bawaan; "hemat animasi" dipilih lewat tombol di footer (bukan setelan OS)
+    const reduce = root.classList.contains('reduce-motion');
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const hasGsap = !!(window.gsap && window.ScrollTrigger);
     const motion = hasGsap && !reduce;
@@ -407,6 +408,38 @@
         const [type, id] = (btn.dataset.chatAttach || '').split(':');
         window.Livewire.emit('chat-open', type || null, id || null);
     });
+
+    /* ---------- Tombol hemat animasi (footer) ---------- */
+    document.querySelectorAll('[data-motion-toggle]').forEach((btn) => {
+        btn.textContent = reduce ? 'ANIMASI: HEMAT' : 'ANIMASI: PENUH';
+        btn.setAttribute('aria-pressed', reduce ? 'true' : 'false');
+        btn.addEventListener('click', () => {
+            try { localStorage.setItem('kz-motion', reduce ? 'full' : 'reduced'); } catch (e) {}
+            window.location.reload(); // GSAP & Lenis disiapkan ulang sesuai pilihan
+        });
+    });
+
+    /* ---------- Bar progres scroll & kelopak sakura ---------- */
+    const bar = document.querySelector('.scroll-progress');
+    if (motion && bar) {
+        gsap.to(bar, { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .3 } });
+    }
+    const hero = document.querySelector('.hero');
+    if (motion && hero) {
+        const petals = document.createElement('div');
+        petals.className = 'petals';
+        petals.setAttribute('aria-hidden', 'true');
+        for (let i = 0; i < 16; i++) {
+            const p = document.createElement('i');
+            const size = 8 + Math.random() * 10;
+            Object.assign(p.style, {
+                left: `${Math.random() * 100}%`, width: `${size}px`, height: `${size * .7}px`,
+                animationDuration: `${9 + Math.random() * 9}s`, animationDelay: `${-Math.random() * 18}s`,
+            });
+            petals.appendChild(p);
+        }
+        hero.prepend(petals);
+    }
 
     /* ---------- Mulai ---------- */
     if (curtain) revealPage(); else introAnimations();

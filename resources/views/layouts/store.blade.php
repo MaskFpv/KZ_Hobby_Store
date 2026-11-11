@@ -7,13 +7,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@hasSection('title')@yield('title') · @endif{{ config('store.name') }}</title>
     <meta name="description" content="@yield('description', config('store.tagline') . ' — figure, gunpla, manga & merchandise anime original. Pre-order aman, ambil di toko.')">
-    <meta name="theme-color" content="#05040d">
+    <meta name="theme-color" content="#ff2e88">
     <link rel="icon" href="{{ asset('img/logo.svg') }}" type="image/svg+xml">
 
-    {{-- Aktifkan mode animasi sedini mungkin; dimatikan lagi bila script gagal dimuat --}}
+    @include('partials.theme-init')
+    {{-- Animasi aktif sejak awal kecuali pengguna memilih "hemat animasi" di footer; dimatikan bila script gagal dimuat --}}
     <script>
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-motion');
-        setTimeout(function () { if (!window.__storeReady) document.documentElement.classList.remove('js-motion'); }, 3000);
+        (function () {
+            if (!document.documentElement.classList.contains('reduce-motion')) document.documentElement.classList.add('js-motion');
+            setTimeout(function () { if (!window.__storeReady) document.documentElement.classList.remove('js-motion'); }, 3000);
+        })();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +29,7 @@
 </head>
 
 <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
     <a href="#konten" class="tag tag-cyan" style="position:absolute;left:-9999px" data-no-transition>Lewati ke konten</a>
 
     @php
@@ -59,6 +63,9 @@
                         <span class="count" data-cart-count @if (empty($cartCount)) hidden @endif>{{ $cartCount ?? 0 }}</span>
                     </a>
                 @endif
+                <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Ganti mode terang / gelap" title="Mode terang / gelap">
+                    <i class="bi bi-moon-stars-fill"></i><i class="bi bi-sun-fill"></i>
+                </button>
                 <a href="{{ $customer ? route('store.account') : route('store.login') }}" class="icon-btn"
                     aria-label="{{ $customer ? 'Akun saya' : 'Masuk' }}">
                     <i class="bi {{ $customer ? 'bi-person-check' : 'bi-person' }}"></i>
@@ -112,6 +119,7 @@
             <div class="footer-giant jp-outline" aria-hidden="true">推し活 · {{ config('store.name') }}</div>
             <div class="footer-bottom">
                 <span>&copy; {{ date('Y') }} {{ config('store.name') }}. Semua merek dagang milik pemiliknya masing-masing.</span>
+                <button type="button" class="motion-toggle mono" data-motion-toggle>ANIMASI: PENUH</button>
                 <span class="mono">MADE WITH ♥ IN JAKARTA</span>
             </div>
         </div>
@@ -163,6 +171,7 @@
         <script src="{{ asset('js/chat.js') }}?v={{ filemtime(public_path('js/chat.js')) }}"></script>
     @endif
     @stack('scripts-before')
+    <script src="{{ asset('js/theme.js') }}?v={{ filemtime(public_path('js/theme.js')) }}"></script>
     <script src="{{ asset('js/store.js') }}?v={{ filemtime(public_path('js/store.js')) }}"></script>
     @stack('scripts')
 </body>

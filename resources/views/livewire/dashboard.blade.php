@@ -178,6 +178,9 @@
             const rp = (v) => 'Rp ' + Number(v).toLocaleString('id-ID');
             const palette = ['#ff4f8b', '#8b7cf6', '#3fb8f0', '#2fbf71', '#f5a524', '#e5484d', '#2a2147'];
             const initial = @json($chart);
+            // Warna teks & garis grafik mengikuti mode terang / gelap
+            const ink = () => document.documentElement.getAttribute('data-theme') === 'dark' ? { text: '#a7a1c8', grid: 'rgba(255,255,255,.08)' } : { text: '#6e6a85', grid: '#efeaf8' };
+            Chart.defaults.color = ink().text;
 
             const sales = new Chart(document.getElementById('salesChart'), {
                 type: 'bar',
@@ -201,7 +204,7 @@
                             beginAtZero: true,
                             suggestedMax: 1000000, // grafik kosong tetap punya skala rupiah yang wajar
                             ticks: { precision: 0, callback: (v) => v >= 1e6 ? (v / 1e6).toLocaleString('id-ID') + ' jt' : rp(v) },
-                            grid: { color: '#efeaf8' }
+                            grid: { color: ink().grid }
                         },
                         x: { grid: { display: false } }
                     }
@@ -223,6 +226,13 @@
                         tooltip: { callbacks: { label: (c) => c.label + ': ' + rp(c.parsed) } }
                     }
                 }
+            });
+
+            window.addEventListener('themechange', () => {
+                Chart.defaults.color = ink().text;
+                sales.options.scales.y.grid.color = ink().grid;
+                sales.update();
+                category.update();
             });
 
             window.addEventListener('dashboard-charts', (e) => {

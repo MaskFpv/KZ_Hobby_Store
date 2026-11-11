@@ -38,7 +38,8 @@ class StorefrontTest extends TestCase
         $nendo = Product::where('sku', 'GSC-NEN-2367')->first();
         $po = Product::where('sku', 'GSC-SCL-0711')->first();
 
-        $this->get('/')->assertOk()->assertSee('Koleksi impianmu')->assertSee($nendo->name)->assertSee('Pre-Order Dibuka');
+        $this->get('/')->assertOk()->assertSee('Koleksi impianmu')->assertSee($nendo->name)->assertSee('Pre-Order Dibuka')
+            ->assertSee('data-theme-toggle', false)->assertSee('data-motion-toggle', false)->assertSee("localStorage.getItem('kz-theme')", false);
         $this->get(route('store.catalog'))->assertOk()->assertSee($nendo->name);
         $this->get(route('store.product', $nendo->slug))->assertOk()->assertSee($nendo->name)->assertSee('Rp 850.000');
         $this->get(route('store.product', $po->slug))->assertOk()->assertSee('DP minimal')->assertSee('Juni 2027');

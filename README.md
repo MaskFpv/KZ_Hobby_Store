@@ -6,6 +6,9 @@ Dua aplikasi dalam satu project Laravel untuk toko action figure, gunpla, manga,
   *prototype* (QRIS / Virtual Account / Kartu), pre-order dengan DP, akun member, chat dengan CS.
 - **Panel staf** di `/admin` (tema *Sakura Night*): kasir POS, pesanan online, pre-order, stok, laporan, chat pelanggan, 6 role.
 
+**Mode terang / gelap** di website & panel (tombol matahari/bulan, pilihan tersimpan di browser). Animasi website aktif
+penuh secara bawaan; pengunjung yang butuh lebih sedikit gerakan bisa memilih **ANIMASI: HEMAT** di footer.
+
 Diagram alur (peta halaman, use case, activity, ERD, LRS): buka `docs/diagrams/kz-hobby-store.drawio`
 di [draw.io / diagrams.net](https://app.diagrams.net) atau ekstensi VS Code *Draw.io Integration*.
 

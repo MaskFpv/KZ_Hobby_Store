@@ -98,7 +98,7 @@
                 @if ($p->description)
                     <div style="margin-top:2rem" data-reveal>
                         <span class="eyebrow">DESKRIPSI</span>
-                        <p style="white-space:pre-line;color:#d7d2f5">{{ $p->description }}</p>
+                        <p style="white-space:pre-line;color:var(--text-soft)">{{ $p->description }}</p>
                     </div>
                 @endif
             </div>

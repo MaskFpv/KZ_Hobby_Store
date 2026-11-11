@@ -12,9 +12,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}" rel="stylesheet">
+    @include('partials.theme-init')
 </head>
 
 <body>
+    <button type="button" class="btn-icon theme-toggle auth-theme" data-theme-toggle aria-label="Ganti mode terang / gelap" title="Mode terang / gelap">
+        <i class="bi bi-moon-stars-fill fs-5"></i><i class="bi bi-sun-fill fs-5"></i>
+    </button>
     <div class="auth-page">
         <section class="auth-art">
             <div class="d-flex align-items-center gap-3">
@@ -89,6 +93,7 @@
             this.innerHTML = show ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
         });
     </script>
+    <script src="{{ asset('js/theme.js') }}?v={{ filemtime(public_path('js/theme.js')) }}"></script>
 </body>
 
 </html>
