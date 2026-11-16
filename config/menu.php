@@ -37,6 +37,12 @@ return [
         ],
     ],
     [
+        'title' => 'Konten Website',
+        'items' => [
+            ['route' => 'articles.index', 'active' => 'articles.*', 'label' => 'Artikel', 'icon' => 'bi-journal-richtext', 'can' => ['view-any', App\Models\Article::class]],
+        ],
+    ],
+    [
         'title' => 'Master Data',
         'items' => [
             ['route' => 'products.index', 'active' => 'products.*', 'label' => 'Katalog Produk', 'icon' => 'bi-box-seam', 'can' => ['view-any', App\Models\Product::class]],

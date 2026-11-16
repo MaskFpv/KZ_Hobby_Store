@@ -22,7 +22,8 @@
         </div>
     </section>
 
-    {{-- Ringkasan --}}
+    {{-- Ringkasan toko: hanya untuk role yang mengurus transaksi / PO (bukan Admin Sosial Media) --}}
+    @if (auth()->user()->can('view-any', App\Models\Transaction::class) || auth()->user()->can('view-any', App\Models\PreOrder::class))
     <div class="row g-3 mb-4">
         <div class="col-6 col-xl-3">
             <div class="stat-card">
@@ -72,6 +73,7 @@
             @endif
         </div>
     </div>
+    @endif
 
     <div class="row g-3">
         {{-- Aksi cepat --}}

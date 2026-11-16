@@ -55,6 +55,52 @@
         }).then((res) => { if (res.isConfirmed) form.submit(); });
     });
 
+    /* ---------- Cari menu di topbar (dari link sidebar) ---------- */
+    const search = document.querySelector('[data-menu-search]');
+    if (search) {
+        const input = search.querySelector('input');
+        const pages = [...document.querySelectorAll('.app-sidebar .side-link')].map((a) => ({
+            href: a.href, label: a.querySelector('span').textContent.trim(), icon: a.querySelector('i').className,
+        }));
+        const list = document.createElement('ul');
+        list.className = 'menu-search-results';
+        list.hidden = true;
+        search.appendChild(list);
+        let active = 0;
+        const render = () => {
+            const q = input.value.trim().toLowerCase();
+            const hits = q ? pages.filter((p) => p.label.toLowerCase().includes(q)).slice(0, 6) : [];
+            active = 0;
+            list.hidden = !hits.length;
+            list.replaceChildren(...hits.map((p, i) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${p.href}" class="${i === 0 ? 'active' : ''}"><i class="${p.icon}"></i><span></span></a>`;
+                li.querySelector('span').textContent = p.label;
+                return li;
+            }));
+        };
+        input.addEventListener('input', render);
+        input.addEventListener('keydown', (e) => {
+            const links = [...list.querySelectorAll('a')];
+            if (!links.length) return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                active = (active + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length;
+                links.forEach((l, i) => l.classList.toggle('active', i === active));
+            }
+            if (e.key === 'Enter') { e.preventDefault(); window.location.href = links[active].href; }
+            if (e.key === 'Escape') { input.value = ''; render(); }
+        });
+        document.addEventListener('click', (e) => { if (!search.contains(e.target)) list.hidden = true; });
+        // Ctrl+K / "/" membuka pencarian
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !/input|textarea|select/i.test(document.activeElement.tagName) && !document.activeElement.isContentEditable)) {
+                e.preventDefault();
+                input.focus();
+            }
+        });
+    }
+
     /* ---------- Angka statistik menghitung naik (mis. "Rp 1.250.000") ---------- */
     if (!document.documentElement.classList.contains('reduce-motion')) {
         document.querySelectorAll('.stat-value').forEach((el) => {

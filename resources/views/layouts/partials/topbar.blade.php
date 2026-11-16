@@ -11,7 +11,13 @@
         <h1 class="page-title">@yield('title', $currentMenu['label'] ?? '')</h1>
     </div>
 
-    <span class="clock-chip d-none d-md-inline" id="topbar-clock"></span>
+    {{-- Cari menu: ketik nama halaman lalu Enter (daftar diambil dari sidebar) --}}
+    <div class="menu-search" data-menu-search>
+        <i class="bi bi-search"></i>
+        <input type="search" placeholder="Cari menu… (mis. stok, artikel)" aria-label="Cari menu" autocomplete="off">
+    </div>
+
+    <span class="clock-chip d-none d-xl-inline" id="topbar-clock"></span>
 
     <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-label="Ganti mode terang / gelap" title="Mode terang / gelap">
         <i class="bi bi-moon-stars-fill fs-5"></i><i class="bi bi-sun-fill fs-5"></i>
@@ -19,8 +25,10 @@
 
     @auth
         <div class="dropdown">
-            <button class="btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu akun">
-                <i class="bi bi-person-circle fs-5"></i>
+            <button class="user-chip" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu akun">
+                <span class="avatar">{{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
+                <span class="user-chip-name d-none d-md-inline">{{ strtok(auth()->user()->name, ' ') }}</span>
+                <i class="bi bi-chevron-down small"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li class="px-3 py-2">

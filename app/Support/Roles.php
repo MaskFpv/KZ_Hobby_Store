@@ -17,6 +17,7 @@ class Roles
         'gudang' => 'Gudang',
         'cs' => 'CS / Order Online',
         'kasir' => 'Kasir',
+        'sosmed' => 'Admin Sosial Media',
     ];
 
     public const DESCRIPTIONS = [
@@ -26,6 +27,7 @@ class Roles
         'gudang' => 'Produk, stok masuk, opname, menyiapkan pesanan online.',
         'cs' => 'Pesanan online, chat pelanggan, member, pre-order.',
         'kasir' => 'Kasir (POS), pre-order di toko, member, serah terima pesanan.',
+        'sosmed' => 'Menulis & menerbitkan artikel website (info toko, anime, hobi).',
     ];
 
     public static function label(?string $role): string

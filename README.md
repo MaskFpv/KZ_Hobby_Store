@@ -4,7 +4,8 @@ Dua aplikasi dalam satu project Laravel untuk toko action figure, gunpla, manga,
 
 - **Website pelanggan** di `/` (tema *Neo-Tokyo Night*): katalog, keranjang, checkout ambil-di-toko, pembayaran online
   *prototype* (QRIS / Virtual Account / Kartu), pre-order dengan DP, akun member, chat dengan CS.
-- **Panel staf** di `/admin` (tema *Sakura Night*): kasir POS, pesanan online, pre-order, stok, laporan, chat pelanggan, 6 role.
+- **Panel staf** di `/admin` (tema *Sakura Ember*: sidebar melayang, topbar kaca + cari menu `Ctrl+K`): kasir POS, pesanan online,
+  pre-order, stok, laporan, chat pelanggan, artikel website, 7 role.
 
 **Mode terang / gelap** di website & panel (tombol matahari/bulan, pilihan tersimpan di browser). Animasi website aktif
 penuh secara bawaan; pengunjung yang butuh lebih sedikit gerakan bisa memilih **ANIMASI: HEMAT** di footer.
@@ -40,6 +41,7 @@ Akun bawaan (dari `UserSeeder` & `CustomerSeeder`, ganti sebelum dipakai sungguh
 | gudang                    | gudang@gmail.com    | gudang123   | Produk, kategori, brand, stok masuk, opname, siapkan pesanan |
 | cs (order online)         | cs@gmail.com        | cstoko123   | Pesanan online, pre-order, pelanggan, chat pelanggan |
 | kasir                     | kasir@gmail.com     | kasir123    | Kasir POS, transaksi miliknya, pre-order, serah terima |
+| sosmed (admin sosial media) | sosmed@gmail.com  | sosmed123   | Menulis & menerbitkan artikel website |
 | member website            | ayu@example.com     | member123   | Login di `/masuk`: PO, riwayat pesanan, chat CS |
 
 **Penjadwal (opsional):** tagihan online yang lewat batas otomatis kadaluarsa saat halaman pesanan/pembayaran
@@ -65,11 +67,12 @@ php artisan test
 
 | Halaman | Isi |
 |---------|-----|
-| Beranda, Katalog, Detail Produk | Animasi GSAP/Lenis, filter kategori/brand/tipe/harga, produk unggulan |
+| Beranda, Katalog, Detail Produk | Animasi GSAP/Lenis; filter katalog tanpa reload (kartu muncul beranimasi); galeri foto + perbesar (lightbox) |
+| Artikel | `/artikel`: filter kategori instan, artikel unggulan; isi artikel dengan daftar isi otomatis, waktu baca, bagikan |
 | Keranjang, Checkout | Tamu boleh belanja; stok dicek ulang & dikunci saat checkout; ambil di toko |
 | Pembayaran | **Prototype** QRIS / Virtual Account / Kartu (cek Luhn; hanya merek + 4 digit akhir disimpan), batas 24 jam |
 | Status & Lacak Pesanan | Timeline status + QR kode pengambilan; tamu melacak dengan kode + email |
-| Pre-Order | Wajib login member, DP minimal 30%, cicilan/pelunasan online dari halaman Akun |
+| Pre-Order | Sorotan PO + kalkulator DP interaktif, filter "segera tutup"/kategori; wajib login member, DP minimal 30%, cicilan dari Akun |
 | Daftar / Masuk / Akun | Captcha buatan sendiri (GD) + persetujuan S&K; riwayat pesanan & PO, ganti profil/password |
 | Chat CS | Widget mengambang (khusus member): teks, gambar maks 2 MB, lampiran produk/pesanan/PO, centang dibaca |
 
@@ -84,8 +87,9 @@ php artisan test
 | Pesanan Online | Dibayar → disiapkan → siap diambil → serah terima (jadi transaksi channel *online*), batal + refund, scan/ketik kode langsung buka detail |
 | Pembayaran Online | Semua tagihan online (pesanan & PO), filter status/metode, export XLS |
 | Chat Pelanggan | Inbox percakapan member, badge belum dibaca, balas teks/gambar, rekomendasikan produk |
+| Artikel | Editor TinyMCE (judul, gambar, tabel, video YouTube), draf/terbit/terjadwal, sampul; HTML dibersihkan HTMLPurifier |
 | Manajemen Pre-Order | DP → cicilan → barang tiba → pelunasan (otomatis jadi transaksi), nota PO, pembatalan (keuangan/admin), badge PO online |
-| Katalog Produk, Kategori, Brand, Pelanggan | CRUD + export PDF/XLS + import XLS (template di `public/import`) |
+| Katalog Produk, Kategori, Brand, Pelanggan | CRUD + export PDF/XLS + import XLS (template di `public/import`); produk punya galeri hingga 8 foto |
 | Stok Masuk | Dipesan → dikirim → diterima (stok bertambah, PO yang menunggu otomatis dialokasikan) |
 | Stok Opname | Input stok fisik banyak produk sekaligus, selisih tercatat |
 | User, Role, Permission | Satu user satu role; role `super-admin` & permission bawaan sistem dikunci |
@@ -104,7 +108,7 @@ app/
   Models/             Eloquent model + konstanta label (status, kondisi, metode bayar)
   Policies/           Hak akses per model, nama permission "<aksi> <subjek>"
   Services/           Logika bisnis: Stock, PreOrder, Order, Payment (prototype), Cart, Chat
-  Support/            Menu (config/menu.php), Greeting (sapaan Jepang), Roles, Captcha
+  Support/            Menu (config/menu.php), Greeting (sapaan Jepang), Roles, Captcha, HtmlSanitizer (artikel)
 config/
   menu.php            Daftar menu sidebar  <- tambah menu baru di sini
   store.php           Nama, alamat, jam buka, DP minimal (%), batas bayar (jam)

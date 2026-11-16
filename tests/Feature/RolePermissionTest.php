@@ -38,7 +38,7 @@ class RolePermissionTest extends TestCase
 
     public function test_each_role_has_a_seeded_account(): void
     {
-        foreach (['super-admin', 'admin', 'keuangan', 'gudang', 'cs', 'kasir'] as $role) {
+        foreach (['super-admin', 'admin', 'keuangan', 'gudang', 'cs', 'kasir', 'sosmed'] as $role) {
             $this->assertSame(1, User::role($role)->count(), "akun {$role}");
         }
     }

@@ -62,13 +62,14 @@ class ProductController extends Controller
     {
         $this->authorize('create', Product::class);
 
-        $data = $request->safe()->except(['image', 'remove_image']);
+        $data = $request->safe()->except(['image', 'remove_image', 'gallery', 'remove_gallery']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product = Product::create($data);
+        $this->syncGallery($request, $product);
 
         return redirect()->route('products.show', $product)->withSuccess(__('crud.common.created'));
     }
@@ -128,7 +129,7 @@ class ProductController extends Controller
     {
         $this->authorize('update', $product);
 
-        $data = $request->safe()->except(['image', 'remove_image', 'stock']);
+        $data = $request->safe()->except(['image', 'remove_image', 'stock', 'gallery', 'remove_gallery']);
 
         if ($request->hasFile('image') || $request->boolean('remove_image')) {
             if ($product->image) {
@@ -145,8 +146,24 @@ class ProductController extends Controller
         }
 
         $product->update($data);
+        $this->syncGallery($request, $product);
 
         return redirect()->route('products.show', $product)->withSuccess(__('crud.common.saved'));
+    }
+
+    /** Hapus foto galeri yang dicentang, lalu tambahkan unggahan baru di urutan akhir (maks 8 foto). */
+    private function syncGallery(ProductRequest $request, Product $product): void
+    {
+        $product->images()->whereIn('id', $request->input('remove_gallery', []))->get()->each(function ($img) {
+            Storage::disk('public')->delete($img->path);
+            $img->delete();
+        });
+
+        $next = (int) $product->images()->max('sort_order') + 1;
+        $room = max(0, 8 - $product->images()->count());
+        foreach (array_slice($request->file('gallery', []), 0, $room) as $i => $file) {
+            $product->images()->create(['path' => $file->store('products/gallery', 'public'), 'sort_order' => $next + $i]);
+        }
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -162,6 +179,7 @@ class ProductController extends Controller
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
+        Storage::disk('public')->delete($product->images()->pluck('path')->all());
 
         // Riwayat penjualan tetap aman: transaction_details.product_id -> NULL, nama tersimpan sebagai snapshot
         $product->delete();

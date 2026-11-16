@@ -1,5 +1,9 @@
-{{-- Kartu produk pre-order dengan hitung mundur deadline. Param: $p (Product) --}}
-<article class="po-card" data-reveal>
+{{-- Kartu produk pre-order dengan hitung mundur deadline.
+     Param: $p (Product); opsional $selectable (klik kartu = sorot di halaman PO), $tags (filter), $urgency (0-100). --}}
+@php $selectable = $selectable ?? false; @endphp
+<article class="po-card {{ $selectable ? 'is-selectable' : '' }}" data-reveal
+    @if ($selectable) data-po-card="{{ $p->id }}" data-tags="{{ $tags ?? '' }}" data-price="{{ (int) $p->selling_price }}"
+        data-deadline-ts="{{ $p->po_deadline?->copy()->endOfDay()->timestamp ?? PHP_INT_MAX }}" tabindex="0" role="button" aria-label="Sorot {{ $p->name }}" @endif>
     <a href="{{ route('store.product', $p->slug) }}" class="po-media" aria-label="{{ $p->name }}"><x-store.art :product="$p" /></a>
     <div>
         <span class="p-brand mono" style="font-size:.7rem;letter-spacing:.14em;color:var(--cyan)">{{ strtoupper($p->brand->name) }}</span>
@@ -19,5 +23,8 @@
         @else
             <span class="tag tag-yellow" style="margin-top:.5rem">PO DIBUKA</span>
         @endif
+        @isset($urgency)
+            <div class="urgency" title="Semakin penuh = semakin dekat batas PO"><i style="width:{{ $urgency }}%"></i></div>
+        @endisset
     </div>
 </article>

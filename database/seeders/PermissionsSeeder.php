@@ -25,6 +25,7 @@ class PermissionsSeeder extends Seeder
         'orders',     // pesanan online
         'payments',   // pembayaran online
         'chats',      // chat pelanggan
+        'articles',   // artikel website
         // khusus admin
         'roles',
         'permissions',
@@ -51,7 +52,7 @@ class PermissionsSeeder extends Seeder
             'special' => ['view dashboard', 'view reports', 'view profit', 'handover orders'],
             'categories' => '*', 'brands' => '*', 'products' => '*', 'customers' => '*',
             'stockins' => '*', 'stockopnames' => '*', 'transactions' => '*', 'preorders' => '*',
-            'orders' => '*', 'payments' => '*', 'chats' => '*',
+            'orders' => '*', 'payments' => '*', 'chats' => '*', 'articles' => '*',
             'users' => ['list', 'view'],
         ],
         'keuangan' => [
@@ -88,6 +89,11 @@ class PermissionsSeeder extends Seeder
             'transactions' => ['list', 'view', 'create'],
             'preorders' => ['list', 'view', 'create', 'update'],
             'orders' => ['list', 'view'],
+        ],
+        // Admin sosial media: hanya konten website (artikel), lihat katalog untuk referensi
+        'sosmed' => [
+            'articles' => '*',
+            'products' => ['list', 'view'],
         ],
     ];
 

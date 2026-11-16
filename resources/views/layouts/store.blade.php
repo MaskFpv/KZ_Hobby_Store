@@ -38,6 +38,7 @@
             ['store.home', 'Beranda', 'ホーム'],
             ['store.catalog', 'Katalog', 'カタログ'],
             ['store.preorders', 'Pre-Order', '予約'],
+            ['store.articles', 'Artikel', '記事', 'store.article*'], // ke-4: pola route aktif (daftar + isi artikel)
             ['store.about', 'Toko', '店舗'],
         ];
     @endphp
@@ -50,8 +51,8 @@
             </a>
 
             <nav class="nav" aria-label="Menu utama">
-                @foreach ($nav as [$route, $label])
-                    <a href="{{ route($route) }}" class="{{ request()->routeIs($route) ? 'active' : '' }}">{{ $label }}</a>
+                @foreach ($nav as $item)
+                    <a href="{{ route($item[0]) }}" class="{{ request()->routeIs($item[3] ?? $item[0]) ? 'active' : '' }}">{{ $item[1] }}</a>
                 @endforeach
             </nav>
 

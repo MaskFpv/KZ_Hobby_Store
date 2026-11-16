@@ -59,6 +59,12 @@ class Greeting
             'title' => 'Reji-gakari (Kasir)',
             'message' => 'Semangat melayani para kolektor hari ini! 頑張って! (Ganbatte!)',
         ],
+        'sosmed' => [
+            'honorific' => 'san',
+            'title_jp' => '広報',
+            'title' => 'Kōhō (Admin Sosial Media)',
+            'message' => 'Ada kabar anime atau rilisan baru? Tulis artikelnya hari ini! 頑張って!',
+        ],
     ];
 
     private const DEFAULT_STYLE = [

@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
         ['gudang@gmail.com', 'Gudang Toko', 'gudang123', 'gudang'],
         ['cs@gmail.com', 'CS Toko', 'cstoko123', 'cs'],
         ['kasir@gmail.com', 'Kasir Toko', 'kasir123', 'kasir'],
+        ['sosmed@gmail.com', 'Admin Sosmed', 'sosmed123', 'sosmed'],
     ];
 
     public function run(): void

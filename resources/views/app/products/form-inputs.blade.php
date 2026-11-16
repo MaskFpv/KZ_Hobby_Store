@@ -183,6 +183,23 @@
             </div>
         @endif
     </div>
+
+    {{-- Galeri: foto tambahan untuk halaman detail produk di website --}}
+    <div class="col-12">
+        <label for="gallery" class="form-label">Galeri Foto <small class="text-muted">(foto detail tambahan, maks 8, masing-masing 2 MB)</small></label>
+        <div class="gallery-grid mb-2" id="gallery-grid">
+            @foreach ($editing ? $product->images : [] as $img)
+                <label class="gallery-item" title="Centang untuk menghapus">
+                    <img src="{{ $img->url }}" alt="Foto galeri {{ $loop->iteration }}">
+                    <span class="form-check m-0"><input class="form-check-input" type="checkbox" name="remove_gallery[]" value="{{ $img->id }}"> Hapus</span>
+                </label>
+            @endforeach
+        </div>
+        <input type="file" name="gallery[]" id="gallery" multiple accept="image/png,image/jpeg,image/webp"
+            class="form-control @error('gallery') is-invalid @enderror @error('gallery.*') is-invalid @enderror">
+        @error('gallery')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        @error('gallery.*')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 </div>
 
 @include('components.partials.image-preview-script')
@@ -190,6 +207,10 @@
 @push('scripts')
     <style>
         #sku::placeholder { text-transform: none; }
+        .gallery-grid { display: flex; flex-wrap: wrap; gap: .6rem; }
+        .gallery-item { width: 110px; display: flex; flex-direction: column; gap: .3rem; align-items: center; font-size: .78rem; cursor: pointer; }
+        .gallery-item img { width: 110px; height: 110px; object-fit: cover; border-radius: 14px; border: 1px solid var(--kz-border); }
+        .gallery-item:has(input:checked) img { opacity: .35; outline: 2px solid var(--kz-danger-strong); }
     </style>
     <script>
         // Tampilkan margin & peringatan bila harga jual < modal
@@ -209,5 +230,18 @@
             sell.addEventListener('input', update);
             update();
         })();
+
+        // Pratinjau foto galeri yang baru dipilih
+        document.getElementById('gallery').addEventListener('change', function () {
+            const grid = document.getElementById('gallery-grid');
+            grid.querySelectorAll('.is-new').forEach((el) => el.remove());
+            [...this.files].slice(0, 8).forEach((file) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item is-new';
+                item.innerHTML = '<img alt=""><span class="small">Baru</span>';
+                item.querySelector('img').src = URL.createObjectURL(file);
+                grid.appendChild(item);
+            });
+        });
     </script>
 @endpush

@@ -25,7 +25,7 @@ class PageSmokeTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const ROLES = ['super-admin', 'admin', 'keuangan', 'gudang', 'cs', 'kasir'];
+    private const ROLES = ['super-admin', 'admin', 'keuangan', 'gudang', 'cs', 'kasir', 'sosmed'];
 
     private Customer $member;
 
@@ -85,6 +85,7 @@ class PageSmokeTest extends TestCase
         $product = Product::where('is_published', true)->where('type', 'pre_order')->firstOrFail();
         $this->get(route('store.product', $product->slug))->assertOk();
         $this->get(route('store.po.create', $product->slug))->assertOk();
+        $this->get(route('store.article', \App\Models\Article::published()->firstOrFail()->slug))->assertOk();
         $order = Order::firstOrFail();
         $this->get(URL::signedRoute('store.order', $order))->assertOk();
         $this->get(URL::signedRoute('store.pay', $order->payments()->firstOrFail()))->assertOk();

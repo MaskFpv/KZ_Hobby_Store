@@ -108,6 +108,12 @@ class Product extends Model
         return $this->hasMany(PreOrder::class);
     }
 
+    /** Foto galeri tambahan (foto utama tetap kolom `image`). */
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order')->orderBy('id');
+    }
+
     /* ---------- Scope ---------- */
 
     public function scopeReadyStock(Builder $query): Builder
@@ -163,6 +169,12 @@ class Product extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    /** Semua URL foto untuk galeri website: foto utama dulu, lalu galeri. */
+    public function getGalleryUrlsAttribute(): array
+    {
+        return array_values(array_filter([$this->image_url, ...$this->images->map->url->all()]));
     }
 
     /** Path absolut gambar untuk DomPDF (tidak bisa ambil via URL). */

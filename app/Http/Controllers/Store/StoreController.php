@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
+use App\Models\Article;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -36,6 +37,7 @@ class StoreController extends Controller
             'preOrders' => $this->openPreOrderQuery()->limit(4)->get(),
             'categories' => Category::withCount(['products' => fn ($q) => $q->where('is_published', true)])->orderBy('name')->get(),
             'brands' => Brand::orderBy('name')->pluck('name'),
+            'articles' => Article::published()->latest('published_at')->limit(3)->get(),
         ]);
     }
 
@@ -67,17 +69,20 @@ class StoreController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('store.catalog', [
+        $data = [
             'products' => $products,
             'filters' => $filters,
             'categories' => Category::orderBy('name')->get(['name', 'slug']),
             'brands' => Brand::orderBy('name')->get(['name', 'slug']),
-        ]);
+        ];
+
+        // Filter dipilih lewat fetch: kirim bagian filter + hasil saja (halaman tidak di-reload)
+        return view($request->hasHeader('X-Catalog') ? 'store.partials.catalog-body' : 'store.catalog', $data);
     }
 
     public function product(string $slug): View
     {
-        $product = self::visible()->where('slug', $slug)->firstOrFail();
+        $product = self::visible()->with('images')->where('slug', $slug)->firstOrFail();
 
         $related = self::visible()
             ->where('id', '!=', $product->id)

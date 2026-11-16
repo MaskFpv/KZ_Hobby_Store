@@ -41,14 +41,14 @@
                                 <label for="qty">Jumlah (maks {{ $maxQty }})</label>
                                 <div class="qty" data-qty style="width:max-content">
                                     <button type="button" data-step="-" aria-label="Kurangi">−</button>
-                                    <input id="qty" type="number" name="qty" value="{{ old('qty', 1) }}" min="1" max="{{ $maxQty }}">
+                                    <input id="qty" type="number" name="qty" value="{{ old('qty', min($maxQty, max(1, (int) request('qty', 1)))) }}" min="1" max="{{ $maxQty }}">
                                     <button type="button" data-step="+" aria-label="Tambah">+</button>
                                 </div>
                                 @error('qty')<span class="error">{{ $message }}</span>@enderror
                             </div>
                             <div class="field">
                                 <label for="dp_amount">Nominal DP (Rp)</label>
-                                <input id="dp_amount" type="number" name="dp_amount" value="{{ old('dp_amount', (int) ceil($price * $pct / 100)) }}" class="input mono @error('dp_amount') is-invalid @enderror" min="1" step="1000">
+                                <input id="dp_amount" type="number" name="dp_amount" value="{{ old('dp_amount', (int) request('dp') ?: (int) ceil($price * $pct / 100)) }}" class="input mono @error('dp_amount') is-invalid @enderror" min="1" step="1000">
                                 @error('dp_amount')<span class="error">{{ $message }}</span>@enderror
                             </div>
                         </div>

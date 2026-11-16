@@ -82,19 +82,40 @@
     }
 
     /* ---------- Animasi masuk & saat scroll ---------- */
+    // Huruf dibungkus per kata (nowrap) agar baris hanya patah di antara kata; elemen seperti <em> dipertahankan
     function splitChars(el) {
-        const text = el.textContent;
-        el.setAttribute('aria-label', text);
-        el.innerHTML = '';
-        [...text].forEach((ch) => {
-            const s = document.createElement('span');
-            s.className = 'split-char';
-            s.setAttribute('aria-hidden', 'true');
-            s.textContent = ch === ' ' ? ' ' : ch;
-            el.appendChild(s);
+        el.setAttribute('aria-label', el.textContent.trim().replace(/\s+/g, ' '));
+        const split = (src, dest) => [...src.childNodes].forEach((node) => {
+            if (node.nodeType === 1) {
+                const copy = node.cloneNode(false);
+                split(node, copy);
+                dest.appendChild(copy);
+                return;
+            }
+            node.textContent.split(/(\s+)/).forEach((part) => {
+                if (!part) return;
+                if (/^\s+$/.test(part)) { dest.appendChild(document.createTextNode(' ')); return; }
+                const word = document.createElement('span');
+                word.className = 'split-word';
+                [...part].forEach((ch) => {
+                    const s = document.createElement('span');
+                    s.className = 'split-char';
+                    s.textContent = ch;
+                    word.appendChild(s);
+                });
+                dest.appendChild(word);
+            });
         });
+        const holder = document.createElement('span');
+        split(el, holder);
+        holder.setAttribute('aria-hidden', 'true');
+        el.replaceChildren(holder);
         return el.querySelectorAll('.split-char');
     }
+
+    /* REMOVE_ME
+            s.textContent = ch === ' ' ? ' ' : ch;
+    REMOVE_ME */
 
     let introDone = false;
     function introAnimations() {
@@ -165,8 +186,11 @@
     }
 
     /* ---------- Tilt 3D & tombol magnet (mouse saja) ---------- */
-    if (motion && finePointer) {
-        document.querySelectorAll('[data-tilt]').forEach((el) => {
+    // Dipanggil ulang untuk kartu yang dimuat lewat fetch (filter katalog / artikel)
+    function bindTilt(root) {
+        if (!motion || !finePointer) return;
+        root.querySelectorAll('[data-tilt]:not([data-tilt-bound])').forEach((el) => {
+            el.setAttribute('data-tilt-bound', '');
             el.addEventListener('mousemove', (e) => {
                 const r = el.getBoundingClientRect();
                 const px = (e.clientX - r.left) / r.width - .5;
@@ -175,7 +199,10 @@
             });
             el.addEventListener('mouseleave', () => gsap.to(el, { rotationY: 0, rotationX: 0, duration: .7, ease: 'elastic.out(1, .5)' }));
         });
+    }
+    bindTilt(document);
 
+    if (motion && finePointer) {
         document.querySelectorAll('[data-magnetic]').forEach((el) => {
             el.addEventListener('mousemove', (e) => {
                 const r = el.getBoundingClientRect();
@@ -211,6 +238,83 @@
         box.addEventListener('mouseleave', () => { media.style.transform = ''; });
     });
 
+    /* ---------- Artikel: daftar isi otomatis dari h2/h3 + sorot bagian yang sedang dibaca ---------- */
+    const articleBody = document.querySelector('[data-article-body]');
+    const toc = document.querySelector('[data-toc]');
+    if (articleBody && toc) {
+        const heads = [...articleBody.querySelectorAll('h2, h3')];
+        if (heads.length > 1) {
+            const list = toc.querySelector('ol');
+            heads.forEach((h, i) => {
+                h.id = h.id || `bagian-${i + 1}`;
+                const li = document.createElement('li');
+                li.className = h.tagName === 'H3' ? 'sub' : '';
+                li.innerHTML = `<a href="#${h.id}" data-no-transition></a>`;
+                li.firstChild.textContent = h.textContent;
+                list.appendChild(li);
+            });
+            toc.hidden = false;
+            toc.addEventListener('click', (e) => {
+                const a = e.target.closest('a');
+                if (!a) return;
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                lenis ? lenis.scrollTo(target, { offset: -100 }) : target.scrollIntoView({ behavior: 'smooth' });
+            });
+            const links = [...toc.querySelectorAll('a')];
+            const spy = new IntersectionObserver((entries) => entries.forEach((en) => {
+                if (!en.isIntersecting) return;
+                links.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === `#${en.target.id}`));
+            }), { rootMargin: '-20% 0px -70% 0px' });
+            heads.forEach((h) => spy.observe(h));
+        }
+        if (motion) {
+            articleBody.querySelectorAll('img, blockquote, figure, table').forEach((el) => gsap.from(el, {
+                opacity: 0, y: 40, scale: .97, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' },
+            }));
+        }
+    }
+
+    /* ---------- Galeri foto produk: thumbnail + lightbox ---------- */
+    const gallery = document.querySelector('[data-gallery]');
+    const galleryData = gallery && gallery.querySelector('[data-gallery-urls]');
+    if (galleryData) {
+        const urls = JSON.parse(galleryData.textContent);
+        const main = gallery.querySelector('[data-gallery-main]');
+        const box = gallery.querySelector('[data-lightbox]');
+        const big = box.querySelector('[data-lightbox-img]');
+        let index = 0;
+        const select = (i, animate = true) => {
+            index = (i + urls.length) % urls.length;
+            gallery.querySelectorAll('[data-gallery-thumb]').forEach((t) => t.classList.toggle('active', +t.dataset.galleryThumb === index));
+            const swap = () => { main.src = urls[index]; big.src = urls[index]; box.querySelector('[data-lightbox-count]').textContent = `${index + 1} / ${urls.length}`; };
+            if (motion && animate) {
+                gsap.timeline()
+                    .to([main, big], { opacity: 0, scale: .96, duration: .18, ease: 'power2.in', onComplete: swap })
+                    .to([main, big], { opacity: 1, scale: 1, duration: .45, ease: 'power3.out' });
+            } else swap();
+        };
+        gallery.addEventListener('click', (e) => {
+            const thumb = e.target.closest('[data-gallery-thumb]');
+            if (thumb) return select(+thumb.dataset.galleryThumb);
+            const step = e.target.closest('[data-lightbox-step]');
+            if (step) return select(index + +step.dataset.lightboxStep);
+            if (e.target.closest('[data-lightbox-close]') || e.target === box) return box.close();
+            if (e.target.closest('[data-gallery-open]')) {
+                select(index, false);
+                box.showModal();
+                if (motion) gsap.fromTo(big, { scale: .85, opacity: 0 }, { scale: 1, opacity: 1, duration: .5, ease: 'back.out(1.4)' });
+            }
+        });
+        gallery.querySelector('[data-gallery-open]').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.currentTarget.click(); });
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') select(index + 1);
+            if (e.key === 'ArrowLeft') select(index - 1);
+        });
+        box.addEventListener('close', () => lenis?.start());
+        box.addEventListener('toggle', () => { if (box.open) lenis?.stop(); });
+    }
+
     /* ---------- Hitung mundur deadline PO ---------- */
     const countdowns = document.querySelectorAll('[data-deadline]');
     if (countdowns.length) {
@@ -241,6 +345,85 @@
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }));
     });
+
+    /* ---------- Halaman Pre-Order: sorotan, kalkulator DP, filter & urutan ---------- */
+    const poPage = document.querySelector('[data-po-page]');
+    if (poPage) {
+        const rp = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+
+        // Kalkulator: DP = jumlah × harga × persen (dibulatkan ke atas), sisa dibayar saat barang tiba
+        poPage.querySelectorAll('[data-spot]').forEach((spot) => {
+            const price = +spot.dataset.price;
+            const qty = spot.querySelector('[data-calc-qty] input');
+            const range = spot.querySelector('[data-calc-range]');
+            const link = spot.querySelector('[data-calc-link]');
+            const base = link.getAttribute('href');
+            const calc = () => {
+                const total = price * (parseInt(qty.value, 10) || 1);
+                const dp = Math.ceil(total * range.value / 100);
+                spot.querySelector('[data-calc-pct]').textContent = range.value;
+                spot.querySelector('[data-calc-dp]').textContent = rp(dp);
+                spot.querySelector('[data-calc-rest]').textContent = rp(total - dp);
+                range.style.setProperty('--fill', `${(range.value - range.min) / (range.max - range.min) * 100}%`);
+                link.setAttribute('href', `${base}?qty=${qty.value}&dp=${dp}`);
+            };
+            qty.addEventListener('input', calc);
+            range.addEventListener('input', calc);
+            calc();
+        });
+
+        // Klik kartu = tampilkan di sorotan
+        const show = (id) => {
+            const next = poPage.querySelector(`[data-spot="${id}"]`);
+            const current = poPage.querySelector('[data-spot].is-active');
+            poPage.querySelectorAll('[data-po-card]').forEach((c) => c.classList.toggle('is-current', c.dataset.poCard === id));
+            const area = poPage.querySelector('.po-spotlight');
+            if (area.getBoundingClientRect().top < 0) (lenis ? lenis.scrollTo(area, { offset: -100 }) : area.scrollIntoView({ behavior: 'smooth' }));
+            if (!next || next === current) return;
+            const swap = () => {
+                current.hidden = true;
+                current.classList.remove('is-active');
+                next.hidden = false;
+                next.classList.add('is-active');
+                if (motion) {
+                    gsap.fromTo(next.querySelector('.spot-media'), { x: -60, opacity: 0, rotationY: 25 }, { x: 0, opacity: 1, rotationY: 0, duration: .8, ease: 'power3.out' });
+                    gsap.fromTo(next.querySelectorAll('.spot-body > *'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .6, stagger: .06, ease: 'power3.out' });
+                }
+            };
+            motion ? gsap.to(current, { opacity: 0, y: -16, duration: .25, ease: 'power2.in', onComplete: () => { gsap.set(current, { clearProps: 'all' }); swap(); } }) : swap();
+        };
+        poPage.addEventListener('click', (e) => {
+            const card = e.target.closest('[data-po-card]');
+            if (!card || e.target.closest('a')) return; // link judul/gambar tetap ke halaman produk
+            show(card.dataset.poCard);
+        });
+        poPage.addEventListener('keydown', (e) => {
+            const card = e.target.closest('[data-po-card]');
+            if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(card.dataset.poCard); }
+        });
+        const first = poPage.querySelector('[data-po-card]');
+        if (first) first.classList.add('is-current');
+
+        // Filter & urutan instan
+        const grid = poPage.querySelector('[data-po-grid]');
+        const cards = [...grid.querySelectorAll('[data-po-card]')];
+        let filter = '*';
+        const apply = () => {
+            const sort = poPage.querySelector('[data-po-sort]').value;
+            const key = { deadline: (c) => +c.dataset.deadlineTs, cheap: (c) => +c.dataset.price, pricey: (c) => -c.dataset.price }[sort];
+            const visible = cards.filter((c) => filter === '*' || c.dataset.tags.split(' ').includes(filter)).sort((a, b) => key(a) - key(b));
+            cards.forEach((c) => { c.hidden = !visible.includes(c); });
+            visible.forEach((c) => grid.appendChild(c));
+            poPage.querySelector('[data-po-empty]').hidden = visible.length > 0;
+            if (motion) gsap.fromTo(visible, { opacity: 0, y: 30, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .55, stagger: .06, ease: 'back.out(1.4)', clearProps: 'transform' });
+        };
+        poPage.querySelectorAll('[data-po-filter]').forEach((chip) => chip.addEventListener('click', () => {
+            poPage.querySelectorAll('[data-po-filter]').forEach((c) => c.classList.toggle('active', c === chip));
+            filter = chip.dataset.poFilter;
+            apply();
+        }));
+        poPage.querySelector('[data-po-sort]').addEventListener('change', apply);
+    }
 
     /* ---------- Refresh captcha ---------- */
     document.querySelectorAll('[data-captcha-refresh]').forEach((btn) => btn.addEventListener('click', () => {
@@ -408,6 +591,79 @@
         const [type, id] = (btn.dataset.chatAttach || '').split(':');
         window.Livewire.emit('chat-open', type || null, id || null);
     });
+
+    /* ---------- Filter tanpa reload (katalog & artikel) ----------
+       [data-catalog] membungkus halaman; [data-catalog-body] ditukar dengan HTML dari server (header X-Catalog).
+       Link [data-catalog-link] & form [data-catalog-form] diambil lewat fetch; URL ikut berubah (back/forward jalan). */
+    const catalog = document.querySelector('[data-catalog]');
+    if (catalog) {
+        const body = catalog.querySelector('[data-catalog-body]');
+        const total = catalog.querySelector('[data-catalog-total]');
+        const items = () => body.querySelectorAll('.p-card, .a-card');
+        let pending = null;
+
+        const load = async (url, push = true) => {
+            pending?.abort();
+            pending = new AbortController();
+            body.classList.add('is-loading');
+            if (motion && items().length) {
+                gsap.to(items(), { opacity: 0, y: 24, scale: .95, duration: .22, stagger: .012, ease: 'power2.in', overwrite: true });
+            }
+            try {
+                const [res] = await Promise.all([
+                    fetch(url, { headers: { 'X-Catalog': '1' }, signal: pending.signal }),
+                    new Promise((r) => setTimeout(r, motion ? 230 : 0)), // tunggu kartu lama selesai menghilang
+                ]);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                body.innerHTML = await res.text();
+                if (push) history.pushState({ catalog: true }, '', url);
+                const count = body.querySelector('[data-total]');
+                if (count && total) total.textContent = count.dataset.total;
+                bindTilt(body);
+                const fresh = items();
+                if (motion) {
+                    gsap.fromTo(fresh,
+                        { opacity: 0, y: 46, scale: .9, rotationX: -14, filter: 'blur(8px)' },
+                        { opacity: 1, y: 0, scale: 1, rotationX: 0, filter: 'blur(0px)', duration: .75, ease: 'power3.out', stagger: .055, clearProps: 'filter,transform' });
+                    gsap.from(body.querySelectorAll('.chip.active'), { scale: .8, duration: .5, ease: 'back.out(3)' });
+                } else {
+                    fresh.forEach((c) => { c.style.opacity = 1; });
+                }
+                const top = body.getBoundingClientRect().top;
+                if (top < 0) (lenis ? lenis.scrollTo(body, { offset: -110 }) : body.scrollIntoView({ behavior: 'smooth' }));
+            } catch (err) {
+                if (err.name !== 'AbortError') window.location.href = url; // gagal: muat halaman biasa
+            } finally {
+                body.classList.remove('is-loading');
+            }
+        };
+
+        catalog.addEventListener('click', (e) => {
+            const a = e.target.closest('a[data-catalog-link]');
+            if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+            e.preventDefault(); // juga mencegah tirai transisi halaman
+            a.parentElement.querySelectorAll('.chip.active').forEach((c) => c.classList.remove('active'));
+            if (a.classList.contains('chip')) a.classList.add('active');
+            load(a.href);
+        });
+        catalog.addEventListener('submit', (e) => {
+            const form = e.target.closest('form[data-catalog-form]');
+            if (!form) return;
+            e.preventDefault();
+            // Ambil filter yang sedang aktif dari URL, timpa dengan isian form yang terlihat
+            const url = new URL(window.location.href);
+            [...new FormData(form)].forEach(([k, v]) => {
+                if (form.elements[k]?.type === 'hidden') return;
+                v ? url.searchParams.set(k, v) : url.searchParams.delete(k);
+            });
+            url.searchParams.delete('page');
+            load(url.toString());
+        });
+        catalog.addEventListener('change', (e) => {
+            if (e.target.matches('[data-catalog-auto]')) e.target.form.requestSubmit();
+        });
+        window.addEventListener('popstate', () => load(window.location.href, false));
+    }
 
     /* ---------- Tombol hemat animasi (footer) ---------- */
     document.querySelectorAll('[data-motion-toggle]').forEach((btn) => {

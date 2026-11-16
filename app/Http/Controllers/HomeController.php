@@ -58,6 +58,7 @@ class HomeController extends Controller
             ['route' => 'customers.create', 'icon' => 'bi-person-plus', 'tone' => 'tone-sky', 'label' => 'Member Baru', 'hint' => 'Daftarkan kolektor', 'can' => ['create', \App\Models\Customer::class]],
             ['route' => 'online-orders.index', 'icon' => 'bi-globe2', 'tone' => 'tone-sakura', 'label' => 'Pesanan Online', 'hint' => 'Siapkan & serahkan', 'can' => ['view-any', \App\Models\Order::class]],
             ['route' => 'chats.index', 'icon' => 'bi-chat-heart', 'tone' => 'tone-lavender', 'label' => 'Chat Pelanggan', 'hint' => 'Balas pertanyaan member', 'can' => ['view-any', \App\Models\Conversation::class]],
+            ['route' => 'articles.create', 'icon' => 'bi-journal-plus', 'tone' => 'tone-sakura', 'label' => 'Tulis Artikel', 'hint' => 'Kabar toko & anime', 'can' => ['create', \App\Models\Article::class]],
             ['route' => 'products.index', 'icon' => 'bi-search', 'tone' => 'tone-matcha', 'label' => 'Cek Katalog', 'hint' => 'Harga & stok produk', 'can' => ['view-any', Product::class]],
             ['route' => 'dashboard.index', 'icon' => 'bi-speedometer2', 'tone' => 'tone-yuzu', 'label' => 'Dashboard', 'hint' => 'Ringkasan toko', 'can' => ['view-dashboard', []]],
             ['route' => 'stock-ins.create', 'icon' => 'bi-truck', 'tone' => 'tone-sky', 'label' => 'Catat Stok Masuk', 'hint' => 'Restock dari supplier', 'can' => ['create', StockIn::class]],

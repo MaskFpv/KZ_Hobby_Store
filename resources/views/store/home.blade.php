@@ -166,6 +166,26 @@
         </div>
     </section>
 
+    {{-- ============ ARTIKEL TERBARU ============ --}}
+    @if ($articles->isNotEmpty())
+        <section class="section" style="padding-top:0">
+            <div class="wrap">
+                <div class="section-head">
+                    <div>
+                        <span class="eyebrow">05 · 記事</span>
+                        <h2 class="section-title" data-split>Kabar Terbaru</h2>
+                    </div>
+                    <a href="{{ route('store.articles') }}" class="link-arrow">Semua artikel <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="a-grid">
+                    @foreach ($articles as $a)
+                        @include('store.partials.article-card', ['a' => $a])
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- ============ CTA MEMBER ============ --}}
     <section class="section" style="padding-top:0">
         <div class="wrap">

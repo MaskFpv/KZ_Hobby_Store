@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChatImageController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StockInController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\Store\AccountController;
+use App\Http\Controllers\Store\ArticleController as StoreArticleController;
 use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\Store\CustomerAuthController;
@@ -45,6 +47,8 @@ Route::name('store.')->group(function () {
     Route::get('pre-order', [StoreController::class, 'preOrders'])->name('preorders');
     Route::get('syarat-ketentuan', [StoreController::class, 'terms'])->name('terms');
     Route::get('tentang', [StoreController::class, 'about'])->name('about');
+    Route::get('artikel', [StoreArticleController::class, 'index'])->name('articles');
+    Route::get('artikel/{slug}', [StoreArticleController::class, 'show'])->name('article');
 
     Route::middleware('guest:customer')->group(function () {
         Route::get('daftar', [CustomerAuthController::class, 'showRegister'])->name('register');
@@ -147,6 +151,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('online-order/exportpdf', [OnlineOrderController::class, 'exportpdf'])->name('online-orders-exportPdf');
     Route::get('online-payments', [OnlinePaymentController::class, 'index'])->name('online-payments.index');
     Route::get('online-payments-export', [OnlinePaymentController::class, 'export'])->name('online-payments-export');
+
+    // Artikel website (Admin Sosial Media)
+    Route::resource('articles', ArticleController::class)->except('show');
+    Route::post('articles-upload-image', [ArticleController::class, 'uploadImage'])->name('articles.upload-image')->middleware('throttle:30,1');
 
     // Chat pelanggan (Livewire, polling 3 detik)
     Route::view('chats', 'app.chats.index')->name('chats.index')->middleware('can:view-any,App\Models\Conversation');

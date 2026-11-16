@@ -30,6 +30,7 @@ class PermissionController extends Controller
         'orders' => 'Pesanan Online',
         'payments' => 'Pembayaran Online',
         'chats' => 'Chat Pelanggan',
+        'articles' => 'Artikel',
         'reports' => 'Laporan',
         'profit' => 'Laba & Harga Modal',
         'users' => 'User',

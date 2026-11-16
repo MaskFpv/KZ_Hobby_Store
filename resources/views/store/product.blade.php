@@ -19,8 +19,36 @@
         </nav>
 
         <div class="pd">
-            <div class="pd-media" data-zoom data-reveal data-fly-source>
-                <x-store.art :product="$p" />
+            @php $photos = $p->gallery_urls; @endphp
+            <div class="pd-gallery" data-reveal data-gallery>
+                <div class="pd-media" data-zoom data-fly-source @if ($photos) data-gallery-open role="button" tabindex="0" aria-label="Perbesar foto" @endif>
+                    @if ($photos)
+                        <img src="{{ $photos[0] }}" alt="{{ $p->name }}" data-gallery-main>
+                    @else
+                        <x-store.art :product="$p" />
+                    @endif
+                </div>
+                @if (count($photos) > 1)
+                    <div class="pd-thumbs" role="group" aria-label="Foto produk">
+                        @foreach ($photos as $i => $url)
+                            <button type="button" class="{{ $i === 0 ? 'active' : '' }}" data-gallery-thumb="{{ $i }}" aria-label="Foto {{ $i + 1 }}">
+                                <img src="{{ $url }}" alt="" loading="lazy">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
+                @if ($photos)
+                    <dialog class="lightbox" data-lightbox aria-label="Foto {{ $p->name }}">
+                        <img alt="{{ $p->name }}" data-lightbox-img>
+                        <span class="lightbox-count mono" data-lightbox-count></span>
+                        @if (count($photos) > 1)
+                            <button type="button" class="lightbox-nav prev" data-lightbox-step="-1" aria-label="Foto sebelumnya"><i class="bi bi-chevron-left"></i></button>
+                            <button type="button" class="lightbox-nav next" data-lightbox-step="1" aria-label="Foto berikutnya"><i class="bi bi-chevron-right"></i></button>
+                        @endif
+                        <button type="button" class="lightbox-close" data-lightbox-close aria-label="Tutup"><i class="bi bi-x-lg"></i></button>
+                    </dialog>
+                    <script type="application/json" data-gallery-urls>@json($photos)</script>
+                @endif
             </div>
 
             <div>
