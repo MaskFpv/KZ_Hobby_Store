@@ -52,6 +52,7 @@
     <x-livewire-alert::scripts />
 
     <script src="{{ asset('js/theme.js') }}?v={{ filemtime(public_path('js/theme.js')) }}"></script>
+    <script src="{{ asset('js/live-bg.js') }}?v={{ filemtime(public_path('js/live-bg.js')) }}"></script>
     <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}"></script>
 
     {{-- Notifikasi flash --}}

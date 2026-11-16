@@ -20,7 +20,7 @@
     --violet: #9b6bff;
     --yellow: #ffe066;
     --text: #eeeaff;
-    --muted: #9a94c4;
+    --muted: #aaa4d3;
     --line: rgba(var(--fg-rgb), .09);
     --radius: 18px;
     --font-display: 'Dela Gothic One', 'Zen Kaku Gothic New', sans-serif;
@@ -42,6 +42,12 @@
     --live-2: rgba(6, 22, 70, .85);
     --live-3: rgba(112, 22, 62, .6);
     --live-4: rgba(20, 30, 96, .55);
+    --live-c0: #070c26;
+    --live-c1: #005a82;
+    --live-c2: #0c1c58;
+    --live-c3: #74184c;
+    --live-c4: #1d4596;
+    --live-veil: rgba(4, 6, 20, .22);
     color-scheme: dark;
 }
 /* Mode terang: neon tetap, latar lavender lembut (tidak silau di proyektor) */
@@ -72,6 +78,12 @@
     --live-2: rgba(253, 236, 224, .9);
     --live-3: rgba(143, 155, 209, .45);
     --live-4: rgba(246, 201, 214, .7);
+    --live-c0: #e9ecf7;
+    --live-c1: #b4c9ea;
+    --live-c2: #fbeee4;
+    --live-c3: #f4cbd9;
+    --live-c4: #aab3df;
+    --live-veil: rgba(246, 244, 252, .26);
     color-scheme: light;
 }
 
@@ -100,6 +112,10 @@ body {
 .live-bg i:nth-child(2) { top: -40vmax; right: -32vmax; background: radial-gradient(circle, var(--live-2) 0%, transparent 62%); animation-duration: 32s, 11s; animation-delay: -9s, -3s; }
 .live-bg i:nth-child(3) { bottom: -42vmax; right: -28vmax; background: radial-gradient(circle, var(--live-3) 0%, transparent 62%); animation-duration: 29s, 10s; animation-delay: -15s, -6s; }
 .live-bg i:nth-child(4) { top: 10vmax; right: -40vmax; background: radial-gradient(circle, var(--live-4) 0%, transparent 60%); animation-duration: 36s, 12s; animation-delay: -4s, -8s; }
+.live-bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+.live-gl .live-bg canvas { display: block; }
+.live-gl .live-bg i { display: none; }
+.live-bg::after { content: ""; position: absolute; inset: 0; background: var(--live-veil, transparent); } /* tirai tipis: teks tetap terbaca */
 @keyframes live-drift {
     0% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(7vmax, 5vmax) scale(1.12); }

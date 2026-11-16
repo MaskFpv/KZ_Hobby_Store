@@ -174,6 +174,7 @@
     @endif
     @stack('scripts-before')
     <script src="{{ asset('js/theme.js') }}?v={{ filemtime(public_path('js/theme.js')) }}"></script>
+    <script src="{{ asset('js/live-bg.js') }}?v={{ filemtime(public_path('js/live-bg.js')) }}"></script>
     <script src="{{ asset('js/store.js') }}?v={{ filemtime(public_path('js/store.js')) }}"></script>
     @stack('scripts')
 </body>
