@@ -22,6 +22,7 @@
         </div>
 
         {{-- Bagian ini ditukar lewat fetch saat filter dipilih (lihat public/js/store.js) --}}
+        <div class="filters-backdrop" data-filters-toggle aria-hidden="true"></div>
         <div class="catalog-layout" data-catalog-body aria-live="polite">
             @include('store.partials.catalog-body')
         </div>

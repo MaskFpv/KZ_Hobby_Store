@@ -93,10 +93,13 @@
     <script src="https://cdn.jsdelivr.net/npm/tinymce@7.6.0/tinymce.min.js"></script>
     <script>
         (function () {
-            const dark = document.documentElement.getAttribute('data-theme') === 'dark';
             const csrf = document.querySelector('meta[name="csrf-token"]').content;
+            const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
 
-            tinymce.init({
+            // Editor dibuat ulang saat tema berganti agar skin terang/gelap ikut berubah (isi tetap)
+            const start = () => {
+            const dark = isDark();
+            return tinymce.init({
                 selector: '#body',
                 license_key: 'gpl',
                 height: 620,
@@ -113,6 +116,8 @@
                 image_caption: true,
                 image_dimensions: false,
                 link_default_target: '_blank',
+                // Saat dibuat ulang (ganti tema), TinyMCE kadang tetap menyembunyikan editor karena skin sudah pernah dimuat
+                init_instance_callback: (ed) => { ed.getContainer().style.visibility = ''; },
                 automatic_uploads: true,
                 relative_urls: false,
                 remove_script_host: false,
@@ -124,7 +129,16 @@
                         .then((r) => r.ok ? r.json() : r.json().then((e) => Promise.reject(e.message || 'Gagal mengunggah gambar')))
                         .then((json) => json.location);
                 },
-                content_style: 'body { font-family: "M PLUS Rounded 1c", system-ui, sans-serif; font-size: 16px; line-height: 1.8; max-width: 760px; margin: 1rem auto; } img { max-width: 100%; height: auto; border-radius: 12px; } blockquote { border-left: 3px solid #ff4f8b; margin-left: 0; padding-left: 1rem; font-style: italic; }',
+                content_style: 'body { font-family: "M PLUS Rounded 1c", system-ui, sans-serif; font-size: 16px; line-height: 1.8; max-width: 760px; margin: 1rem auto; }'
+                    + (dark ? ' body { background: #1a1530; color: #ece8ff; } a { color: #ff8fb5; }' : '')
+                    + ' img { max-width: 100%; height: auto; border-radius: 12px; } blockquote { border-left: 3px solid #ff4f8b; margin-left: 0; padding-left: 1rem; font-style: italic; }',
+            });
+            };
+            start();
+            window.addEventListener('themechange', () => {
+                const ed = tinymce.get('body');
+                if (ed) { ed.save(); ed.remove(); }
+                start();
             });
 
             // Pratinjau sampul

@@ -39,9 +39,15 @@
         if (lenis) open ? lenis.stop() : lenis.start();
     }));
 
-    document.querySelectorAll('[data-filters-toggle]').forEach((btn) => btn.addEventListener('click', () => {
-        document.body.classList.toggle('filters-open');
-    }));
+    // Laci filter katalog (HP): didelegasikan agar tetap jalan setelah isi katalog ditukar lewat fetch
+    const setFilters = (open) => {
+        document.body.classList.toggle('filters-open', open);
+        if (lenis) open ? lenis.stop() : lenis.start();
+    };
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-filters-toggle]')) setFilters(!document.body.classList.contains('filters-open'));
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setFilters(false); });
 
     /* ---------- Tirai transisi halaman ---------- */
     const curtain = document.querySelector('.page-curtain');

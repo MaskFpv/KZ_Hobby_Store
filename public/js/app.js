@@ -55,6 +55,12 @@
         }).then((res) => { if (res.isConfirmed) form.submit(); });
     });
 
+    /* ---------- Sidebar mini: posisi label pil mengikuti item yang disorot ---------- */
+    document.querySelectorAll('.app-sidebar .side-link').forEach((a) => a.addEventListener('mouseenter', () => {
+        const r = a.getBoundingClientRect();
+        a.style.setProperty('--tip-y', `${r.top + r.height / 2}px`);
+    }));
+
     /* ---------- Cari menu di topbar (dari link sidebar) ---------- */
     const search = document.querySelector('[data-menu-search]');
     if (search) {

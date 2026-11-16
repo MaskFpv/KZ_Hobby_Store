@@ -27,6 +27,7 @@
 </head>
 
 <body>
+    @include('partials.live-bg')
     @include('layouts.partials.sidebar')
     <div class="sidebar-backdrop"></div>
 

@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    @include('partials.live-bg')
     <button type="button" class="btn-icon theme-toggle auth-theme" data-theme-toggle aria-label="Ganti mode terang / gelap" title="Mode terang / gelap">
         <i class="bi bi-moon-stars-fill fs-5"></i><i class="bi bi-sun-fill fs-5"></i>
     </button>

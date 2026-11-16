@@ -11,16 +11,23 @@
         window.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
     }
 
+    // Tema tujuan dicatat langsung saat klik: callback View Transition baru jalan di frame berikutnya,
+    // jadi klik cepat beruntun tidak boleh membaca atribut yang belum berubah.
+    let wanted = root.getAttribute('data-theme');
+
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-theme-toggle]');
         if (!btn) return;
-        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        const next = wanted = wanted === 'dark' ? 'light' : 'dark';
         const r = btn.getBoundingClientRect();
         root.style.setProperty('--vt-x', `${r.left + r.width / 2}px`);
         root.style.setProperty('--vt-y', `${r.top + r.height / 2}px`);
 
         if (document.startViewTransition && !root.classList.contains('reduce-motion')) {
-            document.startViewTransition(() => apply(next));
+            let applied = false;
+            const vt = document.startViewTransition(() => { applied = true; apply(next); });
+            // Tanpa frame (tab latar / panel tersembunyi) callback tertahan: lewati animasinya, tema tetap diterapkan
+            setTimeout(() => { if (!applied) vt.skipTransition(); }, 400);
             return;
         }
         root.classList.add('theme-fade');

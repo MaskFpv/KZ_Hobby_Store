@@ -29,6 +29,7 @@
 </head>
 
 <body>
+    @include('partials.live-bg')
     <div class="scroll-progress" aria-hidden="true"></div>
     <a href="#konten" class="tag tag-cyan" style="position:absolute;left:-9999px" data-no-transition>Lewati ke konten</a>
 

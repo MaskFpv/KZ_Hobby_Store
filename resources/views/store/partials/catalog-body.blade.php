@@ -8,7 +8,11 @@
     );
 @endphp
 
-<aside class="filters" aria-label="Filter produk" data-total="{{ $products->total() }}">
+<aside class="filters" aria-label="Filter produk" data-total="{{ $products->total() }}" data-lenis-prevent>
+    <div class="filters-head">
+        <b class="display">Filter</b>
+        <button type="button" class="icon-btn" data-filters-toggle aria-label="Tutup filter"><i class="bi bi-x-lg"></i></button>
+    </div>
     <div>
         <h3>Tipe</h3>
         <div class="chip-list">
