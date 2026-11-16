@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -76,9 +77,39 @@ HTML,
             ],
         ];
 
+        $articles[] = [
+            'title' => 'Review RG 1/144 Nu Gundam: Rangka Dalam yang Bikin Nagih',
+            'category' => 'review',
+            'excerpt' => 'Detail inner frame, artikulasi, dan tips merakitnya dalam satu akhir pekan.',
+            'days' => 2,
+            'body' => <<<'HTML'
+<p>RG Nu Gundam masih jadi salah satu kit Real Grade paling seru dirakit. Begini kesan kami setelah merakitnya.</p>
+<h2>Kelebihan</h2>
+<ul><li>Inner frame penuh, artikulasi luas.</li><li>Fin funnel bisa dipasang dengan mantap.</li><li>Warna sudah dekat dengan versi anime tanpa cat.</li></ul>
+<h2>Kekurangan</h2>
+<p>Beberapa bagian bahu mudah lepas saat dipose. Gunakan sedikit lem plastik bila perlu.</p>
+<blockquote>Skor kami: 9/10. Wajib untuk penggemar Char's Counterattack!</blockquote>
+HTML,
+        ];
+        $articles[] = [
+            'title' => 'Tips Memotong Runner Gunpla agar Bebas Bekas Putih',
+            'category' => 'tips',
+            'excerpt' => 'Teknik dua kali potong, amplas bertingkat, dan alat yang wajib dimiliki pemula.',
+            'days' => 4,
+            'body' => <<<'HTML'
+<h2>Alat yang dibutuhkan</h2>
+<ol><li>Nipper satu mata (single blade).</li><li>Pisau hobi.</li><li>Amplas 400, 800, dan 1000.</li></ol>
+<h2>Teknik dua kali potong</h2>
+<p>Potong pertama agak jauh dari part, lalu potong kedua tepat di gate. Bekas putih (<em>stress mark</em>) jadi jauh berkurang.</p>
+<h2>Rapikan dengan amplas</h2>
+<p>Mulai dari grit kasar ke halus, lalu poles dengan kain microfiber.</p>
+HTML,
+        ];
+
+        $categories = ArticleCategory::pluck('id', 'slug');
         foreach ($articles as $a) {
             Article::firstOrCreate(['title' => $a['title']], [
-                'category' => $a['category'],
+                'article_category_id' => $categories[$a['category']] ?? null,
                 'excerpt' => $a['excerpt'],
                 'body' => $a['body'],
                 'status' => 'published',

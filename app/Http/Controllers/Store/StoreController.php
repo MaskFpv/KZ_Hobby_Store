@@ -37,7 +37,7 @@ class StoreController extends Controller
             'preOrders' => $this->openPreOrderQuery()->limit(4)->get(),
             'categories' => Category::withCount(['products' => fn ($q) => $q->where('is_published', true)])->orderBy('name')->get(),
             'brands' => Brand::orderBy('name')->pluck('name'),
-            'articles' => Article::published()->latest('published_at')->limit(3)->get(),
+            'articles' => Article::published()->with('category')->latest('published_at')->limit(3)->get(),
         ]);
     }
 

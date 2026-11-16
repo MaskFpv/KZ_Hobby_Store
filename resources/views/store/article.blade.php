@@ -8,9 +8,11 @@
         <header class="wrap article-hero">
             <nav class="crumbs" aria-label="Breadcrumb">
                 <a href="{{ route('store.home') }}">BERANDA</a> / <a href="{{ route('store.articles') }}">ARTIKEL</a> /
-                <a href="{{ route('store.articles', ['kategori' => $article->category]) }}">{{ strtoupper($article->category_label) }}</a>
+                @if ($article->category)
+                    <a href="{{ route('store.articles', ['kategori' => $article->category->slug]) }}">{{ strtoupper($article->category_label) }}</a>
+                @endif
             </nav>
-            <span class="tag tag-pink">{{ App\Models\Article::KANJI[$article->category] }} · {{ strtoupper($article->category_label) }}</span>
+            <span class="cat-chip is-solid" style="--cat: {{ $article->category_color }}">{{ $article->category_kanji }} {{ $article->category_label }}</span>
             <h1 class="display article-title" data-split>{{ $article->title }}</h1>
             <div class="article-meta mono" data-reveal>
                 <span><i class="bi bi-person-circle"></i> {{ $article->author->name ?? config('store.name') }}</span>

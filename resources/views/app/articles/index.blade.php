@@ -23,6 +23,9 @@
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('store.articles') }}" target="_blank" class="btn btn-light"><i class="bi bi-box-arrow-up-right"></i> Lihat di website</a>
+                    @can('view-any', App\Models\ArticleCategory::class)
+                        <a href="{{ route('article-categories.index') }}" class="btn btn-light"><i class="bi bi-tags"></i> Kategori</a>
+                    @endcan
                     @can('create', App\Models\Article::class)
                         <a href="{{ route('articles.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tulis Artikel</a>
                     @endcan
@@ -38,8 +41,8 @@
                     <label class="form-label small mb-1">Kategori</label>
                     <select name="category" class="form-select form-select-sm">
                         <option value="">Semua</option>
-                        @foreach (App\Models\Article::CATEGORIES as $value => $label)
-                            <option value="{{ $value }}" @selected(($filters['category'] ?? '') === $value)>{{ $label }}</option>
+                        @foreach ($categories as $c)
+                            <option value="{{ $c->id }}" @selected(($filters['category'] ?? '') == $c->id)>{{ $c->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -67,7 +70,8 @@
                                 <span class="badge {{ $a->status === 'published' ? ($a->isPublic() ? 'bg-success' : 'bg-info text-dark') : 'bg-light text-dark' }}">
                                     {{ $a->status === 'published' && ! $a->isPublic() ? 'Terjadwal' : App\Models\Article::STATUSES[$a->status] }}
                                 </span>
-                                <span class="badge bg-light text-dark">{{ $a->category_label }}</span>
+                                <span class="badge cat-badge" style="--cat: {{ $a->category_color }}">{{ $a->category_label }}</span>
+                                @if ($a->is_pinned)<span class="badge bg-warning text-dark"><i class="bi bi-pin-angle-fill"></i> Disorot</span>@endif
                             </div>
                             <a href="{{ route('articles.edit', $a) }}" class="fw-bold text-decoration-none d-block text-truncate">{{ $a->title }}</a>
                             <small class="text-muted">

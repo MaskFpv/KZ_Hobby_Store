@@ -40,6 +40,7 @@ return [
         'title' => 'Konten Website',
         'items' => [
             ['route' => 'articles.index', 'active' => 'articles.*', 'label' => 'Artikel', 'icon' => 'bi-journal-richtext', 'can' => ['view-any', App\Models\Article::class]],
+            ['route' => 'article-categories.index', 'active' => 'article-categories.*', 'label' => 'Kategori Artikel', 'icon' => 'bi-bookmarks', 'can' => ['view-any', App\Models\ArticleCategory::class]],
         ],
     ],
     [

@@ -42,12 +42,22 @@
                 <input type="datetime-local" id="published_at" name="published_at" value="{{ old('published_at', $article->published_at?->format('Y-m-d\TH:i')) }}"
                     class="form-control mb-3 @error('published_at') is-invalid @enderror">
 
-                <label for="category" class="form-label">Kategori</label>
-                <select id="category" name="category" class="form-select mb-3">
-                    @foreach (App\Models\Article::CATEGORIES as $value => $label)
-                        <option value="{{ $value }}" @selected(old('category', $article->category) === $value)>{{ App\Models\Article::KANJI[$value] }} · {{ $label }}</option>
+                <label for="article_category_id" class="form-label d-flex justify-content-between">
+                    Kategori
+                    @can('create', App\Models\ArticleCategory::class)
+                        <a href="{{ route('article-categories.index') }}" target="_blank" class="small fw-normal">+ kelola kategori</a>
+                    @endcan
+                </label>
+                <select id="article_category_id" name="article_category_id" class="form-select mb-3 @error('article_category_id') is-invalid @enderror">
+                    @foreach ($categories as $c)
+                        <option value="{{ $c->id }}" @selected(old('article_category_id', $article->article_category_id) == $c->id)>{{ $c->kanji_or_default }} · {{ $c->name }}</option>
                     @endforeach
                 </select>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_pinned" name="is_pinned" value="1" @checked(old('is_pinned', $article->is_pinned))>
+                    <label class="form-check-label" for="is_pinned"><i class="bi bi-pin-angle"></i> Sorot di halaman Artikel <small class="text-muted d-block">Hanya satu artikel yang disorot; tanpa sorotan = artikel terbaru.</small></label>
+                </div>
 
                 <label for="cover" class="form-label">Sampul <small class="text-muted">(16:9, maks 3 MB)</small></label>
                 <div class="cover-preview mb-2">

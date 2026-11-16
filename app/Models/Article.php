@@ -9,23 +9,14 @@ use Illuminate\Support\Str;
 /** Artikel website. `body` berisi HTML yang sudah dibersihkan (App\Support\HtmlSanitizer). */
 class Article extends Model
 {
-    public const CATEGORIES = [
-        'toko' => 'Info Toko',
-        'anime' => 'Anime',
-        'hobi' => 'Hobi & Koleksi',
-        'event' => 'Event',
-    ];
-
-    /** Kanji hiasan per kategori untuk sampul tanpa foto. */
-    public const KANJI = ['toko' => '店', 'anime' => '画', 'hobi' => '趣', 'event' => '祭'];
-
     public const STATUSES = ['draft' => 'Draf', 'published' => 'Terbit'];
 
-    protected $fillable = ['title', 'slug', 'category', 'excerpt', 'body', 'cover', 'status', 'published_at', 'user_id'];
+    protected $fillable = ['title', 'slug', 'article_category_id', 'excerpt', 'body', 'cover', 'status', 'is_pinned', 'published_at', 'user_id'];
 
     protected $casts = [
         'published_at' => 'datetime',
         'views' => 'integer',
+        'is_pinned' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -51,6 +42,11 @@ class Article extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(ArticleCategory::class, 'article_category_id');
+    }
+
     /** Sudah terbit dan waktu terbitnya sudah lewat. */
     public function scopePublished(Builder $query): Builder
     {
@@ -64,7 +60,17 @@ class Article extends Model
 
     public function getCategoryLabelAttribute(): string
     {
-        return self::CATEGORIES[$this->category] ?? $this->category;
+        return $this->category->name ?? 'Umum';
+    }
+
+    public function getCategoryColorAttribute(): string
+    {
+        return $this->category->color ?? '#ff2e88';
+    }
+
+    public function getCategoryKanjiAttribute(): string
+    {
+        return $this->category->kanji_or_default ?? '記';
     }
 
     public function getCoverUrlAttribute(): ?string

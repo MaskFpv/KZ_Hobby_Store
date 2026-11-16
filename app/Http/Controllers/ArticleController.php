@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,9 +21,9 @@ class ArticleController extends Controller
         $this->authorize('view-any', Article::class);
 
         $filters = $request->only(['status', 'category', 'q']);
-        $articles = Article::with('author:id,name')
+        $articles = Article::with(['author:id,name', 'category'])
             ->when($filters['status'] ?? null, fn ($q, $v) => $q->where('status', $v))
-            ->when($filters['category'] ?? null, fn ($q, $v) => $q->where('category', $v))
+            ->when($filters['category'] ?? null, fn ($q, $v) => $q->where('article_category_id', $v))
             ->when($filters['q'] ?? null, fn ($q, $v) => $q->where('title', 'like', "%{$v}%"))
             ->latest('updated_at')
             ->get();
@@ -30,6 +31,7 @@ class ArticleController extends Controller
         return view('app.articles.index', [
             'articles' => $articles,
             'filters' => $filters,
+            'categories' => ArticleCategory::orderBy('sort_order')->orderBy('name')->get(),
             'summary' => [
                 'published' => Article::published()->count(),
                 'draft' => Article::where('status', 'draft')->count(),
@@ -42,7 +44,7 @@ class ArticleController extends Controller
     {
         $this->authorize('create', Article::class);
 
-        return view('app.articles.create', ['article' => new Article(['category' => 'anime', 'status' => 'draft'])]);
+        return view('app.articles.create', ['article' => new Article(['status' => 'draft']), 'categories' => $this->categories()]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -50,6 +52,7 @@ class ArticleController extends Controller
         $this->authorize('create', Article::class);
 
         $article = Article::create($this->validated($request) + ['user_id' => $request->user()->id]);
+        $this->keepSinglePin($article);
 
         return redirect()->route('articles.edit', $article)->withSuccess("Artikel \"{$article->title}\" disimpan.");
     }
@@ -58,7 +61,7 @@ class ArticleController extends Controller
     {
         $this->authorize('update', $article);
 
-        return view('app.articles.edit', compact('article'));
+        return view('app.articles.edit', ['article' => $article, 'categories' => $this->categories()]);
     }
 
     public function update(Request $request, Article $article): RedirectResponse
@@ -70,6 +73,7 @@ class ArticleController extends Controller
             Storage::disk('public')->delete($article->cover);
         }
         $article->update($data);
+        $this->keepSinglePin($article);
 
         return redirect()->route('articles.edit', $article)->withSuccess("Artikel \"{$article->title}\" diperbarui.");
     }
@@ -95,18 +99,32 @@ class ArticleController extends Controller
         return response()->json(['location' => asset('storage/' . $request->file('file')->store('articles/inline', 'public'))]);
     }
 
+    /** Hanya satu artikel yang disorot di halaman Artikel. */
+    private function keepSinglePin(Article $article): void
+    {
+        if ($article->is_pinned) {
+            Article::whereKeyNot($article->id)->where('is_pinned', true)->update(['is_pinned' => false]);
+        }
+    }
+
+    private function categories()
+    {
+        return ArticleCategory::orderBy('sort_order')->orderBy('name')->get();
+    }
+
     private function validated(Request $request, ?Article $article = null): array
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:160'],
-            'category' => ['required', Rule::in(array_keys(Article::CATEGORIES))],
+            'article_category_id' => ['required', 'exists:article_categories,id'],
             'excerpt' => ['nullable', 'string', 'max:300'],
             'body' => ['required', 'string', 'max:200000'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'remove_cover' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(array_keys(Article::STATUSES))],
+            'is_pinned' => ['nullable', 'boolean'],
             'published_at' => ['nullable', 'date'],
-        ], [], ['title' => 'judul', 'category' => 'kategori', 'excerpt' => 'ringkasan', 'body' => 'isi artikel', 'cover' => 'sampul', 'published_at' => 'waktu terbit']);
+        ], [], ['title' => 'judul', 'article_category_id' => 'kategori', 'excerpt' => 'ringkasan', 'body' => 'isi artikel', 'cover' => 'sampul', 'published_at' => 'waktu terbit']);
 
         $data['body'] = HtmlSanitizer::clean($data['body']);
         if (trim(strip_tags($data['body'], '<img><iframe>')) === '') {
@@ -116,6 +134,7 @@ class ArticleController extends Controller
         // Terbit tanpa tanggal = sekarang; draf boleh tanpa tanggal
         $data['published_at'] = $data['published_at'] ?? ($data['status'] === 'published' ? ($article?->published_at ?? now()) : null);
 
+        $data['is_pinned'] = $request->boolean('is_pinned');
         unset($data['remove_cover']);
         if ($request->hasFile('cover')) {
             $data['cover'] = $request->file('cover')->store('articles/covers', 'public');

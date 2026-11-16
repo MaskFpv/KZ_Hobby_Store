@@ -68,7 +68,7 @@ php artisan test
 | Halaman | Isi |
 |---------|-----|
 | Beranda, Katalog, Detail Produk | Animasi GSAP/Lenis; filter katalog tanpa reload (kartu muncul beranimasi); galeri foto + perbesar (lightbox) |
-| Artikel | `/artikel`: filter kategori instan, artikel unggulan; isi artikel dengan daftar isi otomatis, waktu baca, bagikan |
+| Artikel | `/artikel`: sorotan (artikel di-pin / terbaru) + terpopuler, filter kategori instan berwarna; isi artikel dengan daftar isi otomatis, waktu baca, bagikan |
 | Keranjang, Checkout | Tamu boleh belanja; stok dicek ulang & dikunci saat checkout; ambil di toko |
 | Pembayaran | **Prototype** QRIS / Virtual Account / Kartu (cek Luhn; hanya merek + 4 digit akhir disimpan), batas 24 jam |
 | Status & Lacak Pesanan | Timeline status + QR kode pengambilan; tamu melacak dengan kode + email |
@@ -87,7 +87,7 @@ php artisan test
 | Pesanan Online | Dibayar → disiapkan → siap diambil → serah terima (jadi transaksi channel *online*), batal + refund, scan/ketik kode langsung buka detail |
 | Pembayaran Online | Semua tagihan online (pesanan & PO), filter status/metode, export XLS |
 | Chat Pelanggan | Inbox percakapan member, badge belum dibaca, balas teks/gambar, rekomendasikan produk |
-| Artikel | Editor TinyMCE (judul, gambar, tabel, video YouTube), draf/terbit/terjadwal, sampul; HTML dibersihkan HTMLPurifier |
+| Artikel & Kategori Artikel | Editor TinyMCE (judul, gambar, tabel, video YouTube), draf/terbit/terjadwal, sampul, pin sorotan; kategori dinamis (nama, kanji, warna); HTML dibersihkan HTMLPurifier |
 | Manajemen Pre-Order | DP → cicilan → barang tiba → pelunasan (otomatis jadi transaksi), nota PO, pembatalan (keuangan/admin), badge PO online |
 | Katalog Produk, Kategori, Brand, Pelanggan | CRUD + export PDF/XLS + import XLS (template di `public/import`); produk punya galeri hingga 8 foto |
 | Stok Masuk | Dipesan → dikirim → diterima (stok bertambah, PO yang menunggu otomatis dialokasikan) |

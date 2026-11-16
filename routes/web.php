@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
@@ -154,6 +155,7 @@ Route::middleware('auth:web')->group(function () {
 
     // Artikel website (Admin Sosial Media)
     Route::resource('articles', ArticleController::class)->except('show');
+    Route::resource('article-categories', ArticleCategoryController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
     Route::post('articles-upload-image', [ArticleController::class, 'uploadImage'])->name('articles.upload-image')->middleware('throttle:30,1');
 
     // Chat pelanggan (Livewire, polling 3 detik)

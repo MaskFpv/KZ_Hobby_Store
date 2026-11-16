@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -29,7 +30,7 @@ class ArticleTest extends TestCase
     {
         return array_merge([
             'title' => 'Review Nendoroid Terbaru',
-            'category' => 'hobi',
+            'article_category_id' => ArticleCategory::where('slug', 'hobi')->value('id'),
             'excerpt' => 'Ringkasan singkat.',
             'body' => '<h2>Bagian satu</h2><p>Isi artikel.</p>',
             'status' => 'published',
@@ -99,6 +100,41 @@ class ArticleTest extends TestCase
 
         $this->get(route('store.articles'))->assertOk()->assertSee('<html', false)->assertSee('data-catalog-body', false);
         $this->get('/')->assertSee('Kabar Terbaru');
+    }
+
+    public function test_categories_are_managed_from_panel_and_shown_on_website(): void
+    {
+        $this->actingAs($this->sosmed());
+        $this->get(route('article-categories.index'))->assertOk()->assertSee('Action Figure');
+
+        $this->post(route('article-categories.store'), ['name' => 'Cosplay', 'kanji' => '装', 'color' => '#ff7a59', 'description' => 'Kostum & aksesori cosplay.'])
+            ->assertRedirect(route('article-categories.index'));
+        $cosplay = ArticleCategory::where('slug', 'cosplay')->firstOrFail();
+        $this->post(route('article-categories.store'), ['name' => 'Cosplay', 'color' => '#000000'])->assertSessionHasErrors('name');
+        $this->post(route('article-categories.store'), ['name' => 'Lain', 'color' => 'merah'])->assertSessionHasErrors('color');
+
+        $this->post(route('articles.store'), $this->payload(['title' => 'Cosplay Frieren Mudah', 'article_category_id' => $cosplay->id]))->assertRedirect();
+        $this->get(route('store.articles', ['kategori' => 'cosplay']), ['X-Catalog' => '1'])->assertOk()
+            ->assertSee('Cosplay Frieren Mudah')->assertSee('Kostum &amp; aksesori cosplay.', false);
+
+        // Kategori yang masih dipakai tidak bisa dihapus; kategori kosong bisa
+        $this->delete(route('article-categories.destroy', $cosplay))->assertSessionHas('error');
+        $this->assertModelExists($cosplay);
+        $empty = ArticleCategory::where('slug', 'event')->firstOrFail();
+        $this->delete(route('article-categories.destroy', $empty))->assertRedirect(route('article-categories.index'));
+        $this->assertModelMissing($empty);
+
+        $this->actingAs(User::role('kasir')->firstOrFail())->get(route('article-categories.index'))->assertForbidden();
+    }
+
+    public function test_only_one_article_is_pinned_and_it_leads_the_page(): void
+    {
+        $this->actingAs($this->sosmed());
+        $this->post(route('articles.store'), $this->payload(['title' => 'Sorotan Pertama', 'is_pinned' => '1']));
+        $this->post(route('articles.store'), $this->payload(['title' => 'Sorotan Kedua', 'is_pinned' => '1']));
+
+        $this->assertSame(['Sorotan Kedua'], Article::where('is_pinned', true)->pluck('title')->all());
+        $this->get(route('store.articles'))->assertOk()->assertSeeInOrder(['a-hero', 'Sorotan Kedua', 'TERPOPULER'], false);
     }
 
     public function test_editor_image_upload_and_cover(): void

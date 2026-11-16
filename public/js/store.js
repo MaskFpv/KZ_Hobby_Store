@@ -599,7 +599,8 @@
     if (catalog) {
         const body = catalog.querySelector('[data-catalog-body]');
         const total = catalog.querySelector('[data-catalog-total]');
-        const items = () => body.querySelectorAll('.p-card, .a-card');
+        // Semua elemen ber-animasi muncul (kartu, banner kategori, sorotan) ikut keluar-masuk saat ditukar
+        const items = () => body.querySelectorAll('[data-reveal]');
         let pending = null;
 
         const load = async (url, push = true) => {
@@ -625,7 +626,7 @@
                     gsap.fromTo(fresh,
                         { opacity: 0, y: 46, scale: .9, rotationX: -14, filter: 'blur(8px)' },
                         { opacity: 1, y: 0, scale: 1, rotationX: 0, filter: 'blur(0px)', duration: .75, ease: 'power3.out', stagger: .055, clearProps: 'filter,transform' });
-                    gsap.from(body.querySelectorAll('.chip.active'), { scale: .8, duration: .5, ease: 'back.out(3)' });
+                    gsap.from(body.querySelectorAll('.chip.active, .cat-chip.active'), { scale: .8, duration: .5, ease: 'back.out(3)' });
                 } else {
                     fresh.forEach((c) => { c.style.opacity = 1; });
                 }
@@ -642,8 +643,10 @@
             const a = e.target.closest('a[data-catalog-link]');
             if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
             e.preventDefault(); // juga mencegah tirai transisi halaman
-            a.parentElement.querySelectorAll('.chip.active').forEach((c) => c.classList.remove('active'));
-            if (a.classList.contains('chip')) a.classList.add('active');
+            if (a.matches('.chip, .cat-chip')) {
+                a.parentElement.querySelectorAll('.chip.active, .cat-chip.active').forEach((c) => c.classList.remove('active'));
+                a.classList.add('active');
+            }
             load(a.href);
         });
         catalog.addEventListener('submit', (e) => {
