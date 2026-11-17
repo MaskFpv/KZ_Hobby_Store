@@ -466,17 +466,17 @@ div.dataTables_wrapper div.dataTables_length select { border-radius: .7rem; }
     --kz-lavender-50: rgba(139, 124, 246, .18);
     --kz-lavender-text: #b9b0ff;
     /* latar hidup (gelap): teal-biru, navy, wine */
-    --live-base: #070b1f;
+    --live-base: #080b1c;
     --live-1: rgba(0, 92, 132, .5);
     --live-2: rgba(6, 22, 70, .85);
     --live-3: rgba(112, 22, 62, .55);
     --live-4: rgba(20, 30, 96, .5);
-    --live-c0: #070c26;
-    --live-c1: #005a82;
-    --live-c2: #0c1c58;
-    --live-c3: #74184c;
-    --live-c4: #1d4596;
-    --live-veil: rgba(4, 6, 20, .22);
+    --live-c0: #080b1d;
+    --live-c1: #0e2a40;
+    --live-c2: #10173a;
+    --live-c3: #2c1631;
+    --live-c4: #172452;
+    --live-veil: rgba(4, 6, 18, .18);
     --kz-topbar: rgba(17, 13, 32, .82);
     --kz-hover: rgba(255, 255, 255, .04);
     --kz-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 0 0 1px rgba(139, 124, 246, .12);

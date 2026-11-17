@@ -37,17 +37,17 @@
     --text-soft: #d7d2f5;
     --grain: .07;
     /* latar hidup (gelap): teal-biru, navy, wine */
-    --live-base: #050a1f;
+    --live-base: #070a1a;
     --live-1: rgba(0, 92, 132, .5);
     --live-2: rgba(6, 22, 70, .85);
     --live-3: rgba(112, 22, 62, .6);
     --live-4: rgba(20, 30, 96, .55);
-    --live-c0: #070c26;
-    --live-c1: #005a82;
-    --live-c2: #0c1c58;
-    --live-c3: #74184c;
-    --live-c4: #1d4596;
-    --live-veil: rgba(4, 6, 20, .22);
+    --live-c0: #080b1d;
+    --live-c1: #0e2a40;
+    --live-c2: #10173a;
+    --live-c3: #2c1631;
+    --live-c4: #172452;
+    --live-veil: rgba(4, 6, 18, .18);
     color-scheme: dark;
 }
 /* Mode terang: neon tetap, latar lavender lembut (tidak silau di proyektor) */
