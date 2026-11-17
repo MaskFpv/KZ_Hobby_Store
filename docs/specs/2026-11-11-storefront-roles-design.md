@@ -1,41 +1,46 @@
 # Desain: Role Baru, Storefront Pelanggan, Pesanan Online, PO Online & Chat
 
-Tanggal: 2026-11-11 · Status: **menunggu persetujuan**
+Tanggal: 2026-11-11 · Status: **selesai (fase A–E)** · Diperbarui 2026-11-17
+
+> Pembaruan setelah dokumen ini disetujui: role ke-7 **Admin Sosmed** (artikel), galeri multi-foto produk,
+> mode terang/gelap, panel "Sakura Ember", dan latar hidup. Rinciannya di `2026-11-16-katalog-artikel-panel.md`.
+> Tabel di bawah sudah disesuaikan dengan kondisi aplikasi saat ini.
 
 ## 1. Keputusan yang sudah disepakati
 
 | Topik | Keputusan |
 |---|---|
-| Role | Super Admin, Admin, Keuangan, Gudang, CS / Order Online, Kasir |
+| Role | Super Admin, Admin, Keuangan, Gudang, CS / Order Online, Kasir, **Admin Sosmed** (ditambah 2026-11-16) |
 | Akun pelanggan | Opsional untuk beli ready stock (tamu lacak pakai kode + email); **wajib** untuk PO dan chat |
 | Daftar akun | Syarat & Ketentuan wajib dicentang + captcha gambar buatan sendiri (PHP GD) |
 | Pengiriman | **Ambil di toko saja** |
 | Pembayaran | Prototype: QRIS, Virtual Account, Kartu Kredit/Debit. Tidak ada gateway sungguhan |
 | Chat | Polling 3 detik (Livewire), teks + gambar, lampirkan produk/pesanan, status dibaca & badge |
-| Visual storefront | **Neo-Tokyo Night**: gelap, neon pink & cyan, animasi kaya |
-| Panel admin | Tetap Sakura Night, dipindah ke prefix `/admin` |
+| Visual storefront | **Neo-Tokyo Night**: neon pink & cyan, animasi kaya, mode terang/gelap, latar hidup (liquid gradient) |
+| Panel admin | Prefix `/admin`; desain diganti **Sakura Ember** (sidebar melayang, mode terang/gelap) |
 
 ## 2. Role & hak akses
 
-Permission tetap format `<aksi> <subjek>`. Subjek baru: `orders` (pesanan online), `chats`, `payments`.
+Permission tetap format `<aksi> <subjek>`. Subjek baru: `orders` (pesanan online), `chats`, `payments`, `articles`.
 Permission khusus baru:
 - `view reports` — halaman Laporan Penjualan, grafik penjualan bulanan & per kategori, export transaksi.
 - `view profit` — harga modal & laba kotor.
 
-| Area | Super Admin | Admin | Keuangan | Gudang | CS | Kasir |
-|---|---|---|---|---|---|---|
-| Dashboard | penuh | penuh | penuh | stok & pesanan disiapkan | pesanan & chat | — (cukup Home) |
-| Laporan / grafik / laba | ✓ | ✓ | ✓ | — | — | — |
-| Kasir (POS) | ✓ | ✓ | — | — | — | ✓ |
-| Riwayat transaksi | semua | semua | semua | — | — | **miliknya sendiri** |
-| Produk / kategori / brand | CRUD | CRUD | lihat | CRUD | lihat | lihat |
-| Stok masuk / opname | ✓ | ✓ | lihat stok masuk | ✓ | — | — |
-| Pelanggan | CRUD | CRUD | lihat | — | tambah/ubah | tambah/ubah |
-| Pre-Order | ✓ | ✓ | lihat + batal/refund | lihat | buat/bayar | buat/bayar |
-| Pesanan online | ✓ | ✓ | lihat + batal/refund | siapkan → siap diambil | proses → siap diambil | serah terima (diambil) |
-| Pembayaran online | ✓ | ✓ | ✓ | — | lihat | — |
-| Chat pelanggan | ✓ | ✓ | — | — | ✓ | — |
-| User / Role / Permission | ✓ | — | — | — | — | — |
+| Area | Super Admin | Admin | Keuangan | Gudang | CS | Kasir | Sosmed |
+|---|---|---|---|---|---|---|---|
+| Dashboard | penuh | penuh | penuh | stok & pesanan disiapkan | pesanan & chat | — (cukup Home) | — (cukup Home) |
+| Laporan / grafik / laba | ✓ | ✓ | ✓ | — | — | — | — |
+| Kasir (POS) | ✓ | ✓ | — | — | — | ✓ | — |
+| Riwayat transaksi | semua | semua | semua | — | — | **miliknya sendiri** | — |
+| Produk / kategori / brand | CRUD | CRUD | lihat | CRUD | lihat | lihat | lihat produk |
+| Stok masuk / opname | ✓ | ✓ | lihat stok masuk | ✓ | — | — | — |
+| Pelanggan | CRUD | CRUD | lihat | — | tambah/ubah | tambah/ubah | — |
+| Pre-Order | ✓ | ✓ | lihat + batal/refund | lihat | buat/bayar | buat/bayar | — |
+| Pesanan online | ✓ | ✓ | lihat + batal/refund | siapkan → siap diambil | proses → siap diambil | serah terima (diambil) | — |
+| Pembayaran online | ✓ | ✓ | ✓ | — | lihat | — | — |
+| Chat pelanggan | ✓ | ✓ | — | — | ✓ | — | — |
+| User / Role / Permission | ✓ | — | — | — | — | — | — |
+| Artikel & kategori artikel | ✓ | ✓ | — | — | — | — | ✓ |
 
 Dashboard dipecah per bagian dan tiap bagian dicek dengan `@can`, jadi satu halaman melayani semua role.
 
@@ -45,8 +50,8 @@ Dashboard dipecah per bagian dan tiap bagian dicek dengan `@can`, jadi satu hala
 | URL | Isi |
 |---|---|
 | `/` | Hero kanji besar + produk unggulan berputar, marquee brand, kategori, "Baru Datang", "Pre-Order Dibuka" (deadline), alur PO 4 langkah, CTA daftar member |
-| `/katalog` | Filter kategori/brand/kondisi/tipe/harga, urutkan, cari, grid beranimasi |
-| `/produk/{slug}` | Foto + zoom, detail, stok, Beli / Pre-Order (DP), "Tanya CS", produk terkait |
+| `/katalog` | Filter kategori/brand/kondisi/tipe/harga, urutkan, cari, grid beranimasi (tanpa reload, laci filter di HP) |
+| `/produk/{slug}` | Galeri foto + thumbnail + perbesar, detail, stok, Beli / Pre-Order (DP), "Tanya CS", produk terkait |
 | `/pre-order` | Semua produk PO, countdown deadline, penjelasan DP & pelunasan |
 | `/keranjang`, `/checkout` | Keranjang (ready stock), data pemesan, pilih metode bayar, setuju S&K |
 | `/bayar/{kode}` | Layar pembayaran prototype per metode + hitung mundur |
@@ -54,6 +59,7 @@ Dashboard dipecah per bagian dan tiap bagian dicek dengan `@can`, jadi satu hala
 | `/akun/*` | Ringkasan, pesanan saya, PO saya (bayar cicilan/pelunasan online), profil, chat |
 | `/daftar`, `/masuk`, `/keluar` | Auth pelanggan (guard `customer`) |
 | `/syarat-ketentuan`, `/tentang` | S&K, lokasi & jam buka toko |
+| `/artikel`, `/artikel/{slug}` | Daftar artikel (sorotan, terpopuler, filter kategori & cari) dan isi artikel (daftar isi, progres baca, terkait) — ditambah ronde 3 |
 
 ### Teknologi (tetap tanpa npm)
 Blade + CSS/JS statis (`public/css/store.css`, `public/js/store.js`) + CDN:
@@ -75,6 +81,8 @@ marquee brand tak berujung · "terbang ke keranjang" saat tambah produk · timel
 - `online_payments` (polimorfik ke `orders` / `pre_orders`): metode, bank & nomor VA / payload QRIS / merek + 4 digit kartu, nominal, status, kadaluarsa.
 - `pre_orders.status` + `pending_payment`; `transactions` + kolom `channel` (`pos` / `online`) dan metode `va`, `card`.
 - `conversations` & `chat_messages` (pengirim pelanggan/staf, teks, gambar, produk/pesanan terlampir, `read_at`).
+- Ditambah ronde 3: `product_images` (galeri, `sort_order`), `articles` (judul, slug, ringkasan, isi HTML bersih, sampul,
+  status draf/terbit, `is_pinned`, `published_at`, `views`, penulis), `article_categories` (nama, slug, kanji, warna, urutan).
 
 ### Alur pesanan ready stock
 `pending_payment` → (bayar) `paid` → `processing` (CS/Gudang menyiapkan) → `ready_pickup` → `completed` (kasir serah terima, **di sini Transaction dibuat**)
@@ -100,7 +108,8 @@ Widget mengambang di storefront untuk member login; inbox "Chat Pelanggan" di pa
 Polling 3 detik, gambar maks 2 MB, lampirkan produk/pesanan/PO, centang dibaca, badge belum dibaca di navbar & sidebar.
 
 ## 5. Di luar cakupan (sengaja tidak dibuat)
-Pengiriman/ongkir, email/WhatsApp notifikasi, gateway sungguhan, wishlist, review produk, multi-foto per produk, reset password pelanggan (via CS).
+Pengiriman/ongkir, email/WhatsApp notifikasi, gateway sungguhan, wishlist, review produk, reset password pelanggan (via CS).
+(Multi-foto per produk awalnya di luar cakupan, lalu dibuat di ronde 3: tabel `product_images`.)
 
 ## 6. Urutan pengerjaan & kriteria selesai
 | Fase | Selesai bila |
